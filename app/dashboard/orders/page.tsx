@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import OrderTabs from '../components/orders/OrderTabs';
 import OrderCard from '../components/orders/OrderCard';
 
@@ -6,7 +9,7 @@ const orders = [
         id: 'ORD-2024-007',
         date: '16.11.2024',
         vendor: 'OfficeMax Direct',
-        status: 'Awaiting Response',
+        status: 'Awaiting Response', // Ongoing
         amount: '£459.50',
         items: [
             { name: 'Office Paper A4 (500 sheets)', quantity: 20, unitPrice: 12.99 },
@@ -21,7 +24,7 @@ const orders = [
         id: 'ORD-2024-005',
         date: '12.11.2024',
         vendor: 'TechSupply Hub',
-        status: 'Dispatched',
+        status: 'Dispatched', // In Progress
         amount: '£1125.00',
         paymentProofUrl: 'example.pdf',
         items: [
@@ -37,7 +40,7 @@ const orders = [
         id: 'ORD-2024-001',
         date: '10.11.2024',
         vendor: 'OfficeMax Direct',
-        status: 'Completed',
+        status: 'Completed', // Completed
         amount: '£1249.50',
         paymentProofUrl: 'example.pdf',
         items: [
@@ -49,9 +52,45 @@ const orders = [
             { title: 'Order dispatched', date: '2024-11-12 10:00', actor: 'System' },
         ]
     },
+    // Added more mock data to fill out categories
+    {
+        id: 'ORD-2024-009',
+        date: '17.11.2024',
+        vendor: 'CleanPro Ltd',
+        status: 'Invoice Generated', // In Progress
+        amount: '£632.00',
+        items: [{ name: 'Trash Bags', quantity: 20, unitPrice: 31.60 }],
+        activity: [{ title: 'Invoice generated', date: '2024-11-17 10:00', actor: 'System' }]
+    },
+    {
+        id: 'ORD-2024-002',
+        date: '08.11.2024',
+        vendor: 'CleanPro Ltd',
+        status: 'Delivered', // Completed
+        amount: '£842.00',
+        items: [{ name: 'Hand Sanitizer', quantity: 10, unitPrice: 84.20 }],
+        activity: [{ title: 'Delivered', date: '2024-11-10 14:00', actor: 'Vendor' }]
+    }
 ];
 
 export default function OrderPage() {
+    const [activeTab, setActiveTab] = useState('ongoing');
+
+    const getStatusCategory = (status: string) => {
+        if (['Awaiting Response', 'Order Placed'].includes(status)) return 'ongoing';
+        if (['Dispatched', 'Shipped', 'Invoice Generated', 'Payment Sent'].includes(status)) return 'inProgress';
+        if (['Completed', 'Delivered'].includes(status)) return 'completed';
+        return 'ongoing';
+    };
+
+    const filteredOrders = orders.filter(order => getStatusCategory(order.status) === activeTab);
+
+    const counts = {
+        ongoing: orders.filter(o => getStatusCategory(o.status) === 'ongoing').length,
+        inProgress: orders.filter(o => getStatusCategory(o.status) === 'inProgress').length,
+        completed: orders.filter(o => getStatusCategory(o.status) === 'completed').length
+    };
+
     return (
         <div className="max-w-7xl mx-auto">
             <div className="mb-8">
@@ -59,12 +98,22 @@ export default function OrderPage() {
                 <p className="text-slate-500">Monitor ongoing, in-progress, and completed orders in one place</p>
             </div>
 
-            <OrderTabs />
+            <OrderTabs
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                counts={counts}
+            />
 
             <div className="space-y-4">
-                {orders.map((order, index) => (
-                    <OrderCard key={index} {...order} />
-                ))}
+                {filteredOrders.length > 0 ? (
+                    filteredOrders.map((order, index) => (
+                        <OrderCard key={index} {...order} />
+                    ))
+                ) : (
+                    <div className="p-12 text-center bg-white rounded-xl border border-slate-100">
+                        <p className="text-slate-500">No orders found in this category.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

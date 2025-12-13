@@ -1,26 +1,31 @@
 import { cn } from "@/lib/utils";
 
-interface TabItem {
-    label: string;
-    count: number;
-    active?: boolean;
+interface OrderTabsProps {
+    activeTab: string;
+    onTabChange: (tab: string) => void;
+    counts: {
+        ongoing: number;
+        inProgress: number;
+        completed: number;
+    };
 }
 
-const tabs: TabItem[] = [
-    { label: 'Ongoing Orders', count: 3, active: true },
-    { label: 'In Progress', count: 2, active: false },
-    { label: 'Completed Orders', count: 2, active: false },
-];
+export default function OrderTabs({ activeTab, onTabChange, counts }: OrderTabsProps) {
+    const tabs = [
+        { id: 'ongoing', label: 'Ongoing Orders', count: counts.ongoing },
+        { id: 'inProgress', label: 'In Progress', count: counts.inProgress },
+        { id: 'completed', label: 'Completed Orders', count: counts.completed },
+    ];
 
-export default function OrderTabs() {
     return (
-        <div className="bg-slate-100 p-1 rounded-xl inline-flex mb-8">
-            {tabs.map((tab, index) => (
+        <div className="bg-slate-100 p-1 rounded-xl inline-flex mb-8 overflow-x-auto max-w-full">
+            {tabs.map((tab) => (
                 <button
-                    key={index}
+                    key={tab.id}
+                    onClick={() => onTabChange(tab.id)}
                     className={cn(
-                        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
-                        tab.active
+                        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap",
+                        activeTab === tab.id
                             ? "bg-white text-slate-900 shadow-sm"
                             : "text-slate-500 hover:text-slate-700"
                     )}
@@ -28,7 +33,7 @@ export default function OrderTabs() {
                     {tab.label}
                     <span className={cn(
                         "inline-flex items-center justify-center w-5 h-5 rounded-md text-xs",
-                        tab.active ? "bg-brand text-white" : "bg-slate-200 text-slate-600"
+                        activeTab === tab.id ? "bg-brand text-white" : "bg-slate-200 text-slate-600"
                     )}>
                         {tab.count}
                     </span>

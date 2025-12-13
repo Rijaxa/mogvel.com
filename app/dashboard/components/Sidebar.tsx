@@ -14,7 +14,9 @@ import {
     LogOut,
     MessageSquare,
     LayoutGrid, // Added
-    Package // Added
+    Package, // Added
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,17 +36,30 @@ const bottomItems = [
     { icon: HelpCircle, label: 'Help', href: '#' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+    isCollapsed,
+    toggleSidebar
+}: {
+    isCollapsed: boolean;
+    toggleSidebar: () => void;
+}) {
     const pathname = usePathname();
 
     return (
-        <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 flex flex-col z-50">
-            <div className="p-6 border-b border-slate-100">
+        <aside
+            className={cn(
+                "fixed inset-y-0 left-0 bg-white border-r border-slate-200 flex flex-col z-50 transition-all duration-300",
+                isCollapsed ? "w-20" : "w-64"
+            )}
+        >
+            <div className={cn("p-6 border-b border-slate-100 flex items-center", isCollapsed ? "justify-center" : "justify-start gap-2")}>
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg shrink-0">
                         M
                     </div>
-                    <span className="text-xl font-bold text-slate-900">Mogvel</span>
+                    {!isCollapsed && (
+                        <span className="text-xl font-bold text-slate-900 animate-in fade-in duration-300">Mogvel</span>
+                    )}
                 </Link>
             </div>
 
@@ -56,14 +71,25 @@ export default function Sidebar() {
                             key={item.label}
                             href={item.href}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group relative",
                                 isActive
                                     ? "bg-brand text-white"
-                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                                isCollapsed && "justify-center"
                             )}
+                            title={isCollapsed ? item.label : undefined}
                         >
-                            <item.icon className="w-5 h-5" />
-                            {item.label}
+                            <item.icon className="w-5 h-5 shrink-0" />
+                            {!isCollapsed && (
+                                <span className="animate-in fade-in duration-300">{item.label}</span>
+                            )}
+
+                            {/* Tooltip for collapsed state */}
+                            {isCollapsed && (
+                                <div className="absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
+                                    {item.label}
+                                </div>
+                            )}
                         </Link>
                     );
                 })}
@@ -74,16 +100,45 @@ export default function Sidebar() {
                     <Link
                         key={item.label}
                         href={item.href}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                        className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors group relative",
+                            isCollapsed && "justify-center"
+                        )}
+                        title={isCollapsed ? item.label : undefined}
                     >
-                        <item.icon className="w-5 h-5" />
-                        {item.label}
+                        <item.icon className="w-5 h-5 shrink-0" />
+                        {!isCollapsed && (
+                            <span className="animate-in fade-in duration-300">{item.label}</span>
+                        )}
+                        {isCollapsed && (
+                            <div className="absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
+                                {item.label}
+                            </div>
+                        )}
                     </Link>
                 ))}
 
-                <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
-                    <LogOut className="w-5 h-5" />
-                    Logout
+                <button
+                    className={cn(
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors group relative",
+                        isCollapsed && "justify-center"
+                    )}
+                    title={isCollapsed ? "Logout" : undefined}
+                >
+                    <LogOut className="w-5 h-5 shrink-0" />
+                    {!isCollapsed && <span className="animate-in fade-in duration-300">Logout</span>}
+                </button>
+
+                {/* Collapse Toggle Button */}
+                <button
+                    onClick={toggleSidebar}
+                    className="w-full mt-4 flex items-center justify-center p-2 rounded-lg bg-teal-50 text-brand hover:bg-teal-100 transition-colors"
+                >
+                    {isCollapsed ? (
+                        <ChevronRight className="w-5 h-5" />
+                    ) : (
+                        <ChevronLeft className="w-5 h-5" />
+                    )}
                 </button>
             </div>
         </aside>

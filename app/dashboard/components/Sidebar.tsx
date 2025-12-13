@@ -106,41 +106,57 @@ export default function Sidebar({
                         )}
                         title={isCollapsed ? item.label : undefined}
                     >
-                        <item.icon className="w-5 h-5 shrink-0" />
-                        {!isCollapsed && (
-                            <span className="animate-in fade-in duration-300">{item.label}</span>
-                        )}
-                        {isCollapsed && (
-                            <div className="absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
-                                {item.label}
-                            </div>
-                        )}
-                    </Link>
-                ))}
+                        {bottomItems.map((item) => {
+                            const isActive = pathname === item.href; // Determine if the item is active
+                            return (
+                                <Link
+                                    key={item.label}
+                                    href={item.href}
+                                    className={cn(
+                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group relative",
+                                        isActive
+                                            ? "bg-brand text-white" // Apply active styles
+                                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                                        isCollapsed && "justify-center"
+                                    )}
+                                    title={isCollapsed ? item.label : undefined}
+                                >
+                                    <item.icon className="w-5 h-5 shrink-0" />
+                                    {!isCollapsed && (
+                                        <span className="animate-in fade-in duration-300">{item.label}</span>
+                                    )}
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
+                                            {item.label}
+                                        </div>
+                                    )}
+                                </Link>
+                            );
+                        })}
 
-                <button
-                    className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors group relative",
-                        isCollapsed && "justify-center"
-                    )}
-                    title={isCollapsed ? "Logout" : undefined}
-                >
-                    <LogOut className="w-5 h-5 shrink-0" />
-                    {!isCollapsed && <span className="animate-in fade-in duration-300">Logout</span>}
-                </button>
+                        <button
+                            className={cn(
+                                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors group relative",
+                                isCollapsed && "justify-center"
+                            )}
+                            title={isCollapsed ? "Logout" : undefined}
+                        >
+                            <LogOut className="w-5 h-5 shrink-0" />
+                            {!isCollapsed && <span className="animate-in fade-in duration-300">Logout</span>}
+                        </button>
 
-                {/* Collapse Toggle Button */}
-                <button
-                    onClick={toggleSidebar}
-                    className="w-full mt-4 flex items-center justify-center p-2 rounded-lg bg-teal-50 text-brand hover:bg-teal-100 transition-colors"
-                >
-                    {isCollapsed ? (
-                        <ChevronRight className="w-5 h-5" />
-                    ) : (
-                        <ChevronLeft className="w-5 h-5" />
-                    )}
-                </button>
-            </div>
+                        {/* Collapse Toggle Button */}
+                        <button
+                            onClick={toggleSidebar}
+                            className="w-full mt-4 flex items-center justify-center p-2 rounded-lg bg-teal-50 text-brand hover:bg-teal-100 transition-colors"
+                        >
+                            {isCollapsed ? (
+                                <ChevronRight className="w-5 h-5" />
+                            ) : (
+                                <ChevronLeft className="w-5 h-5" />
+                            )}
+                        </button>
+                    </div>
         </aside>
     );
 }

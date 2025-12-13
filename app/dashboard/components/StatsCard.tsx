@@ -10,6 +10,7 @@ interface StatsCardProps {
     alert?: boolean;
     alertText?: string;
     className?: string;
+    onClick?: () => void;
 }
 
 export default function StatsCard({
@@ -20,10 +21,18 @@ export default function StatsCard({
     icon: Icon,
     alert,
     alertText,
-    className
+    className,
+    onClick
 }: StatsCardProps) {
     return (
-        <div className={cn("bg-white p-6 rounded-2xl border border-slate-100 flex flex-col justify-between h-40", className)}>
+        <div
+            onClick={onClick}
+            className={cn(
+                "bg-white p-6 rounded-2xl border border-slate-100 flex flex-col justify-between h-40 transition-shadow",
+                className,
+                onClick && "cursor-pointer hover:shadow-md hover:border-brand/20"
+            )}
+        >
             <div className="flex justify-between items-start">
                 <span className="text-slate-500 font-medium text-sm">{title}</span>
                 {Icon && <Icon className="w-5 h-5 text-brand" />}

@@ -1,11 +1,22 @@
+'use client';
+
+import { useState } from 'react';
 import StatsCard from '../components/StatsCard';
 import { BenchmarkingChart, ForecastingChart } from '../components/Charts';
 import ActiveVendorsTable from '../components/ActiveVendorsTable';
-import { Box, Users, DollarSign, Star } from 'lucide-react';
+import LowStockModal from '../components/LowStockModal';
+import { Box, Users, DollarSign } from 'lucide-react';
 
 export default function DashboardPage() {
+    const [isLowStockModalOpen, setIsLowStockModalOpen] = useState(false);
+
     return (
         <div className="space-y-8 max-w-7xl mx-auto">
+            <LowStockModal
+                isOpen={isLowStockModalOpen}
+                onClose={() => setIsLowStockModalOpen(false)}
+            />
+
             <div>
                 <h1 className="text-2xl font-bold text-slate-900">Company Dashboard</h1>
                 <p className="text-slate-500">Welcome back! Here's your procurement overview</p>
@@ -40,6 +51,7 @@ export default function DashboardPage() {
                     metric="5"
                     alert={true}
                     alertText="Needs attention"
+                    onClick={() => setIsLowStockModalOpen(true)}
                 />
             </div>
 

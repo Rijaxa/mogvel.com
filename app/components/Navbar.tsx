@@ -18,9 +18,9 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-4">
-                <button className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
+                <Link href="/dashboard/company" className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
                     Company Login
-                </button>
+                </Link>
                 <button className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
                     Vendor Login
                 </button>

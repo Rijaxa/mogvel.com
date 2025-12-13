@@ -1,5 +1,12 @@
-import { ChevronDown } from 'lucide-react';
+'use client';
+
+import { ChevronDown, RefreshCw, FileText, X } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import OrderItemsList from './OrderItemsList';
+import OrderProgress from './OrderProgress';
+import OrderActivityFeed from './OrderActivityFeed';
 
 interface OrderCardProps {
     id: string;
@@ -7,6 +14,9 @@ interface OrderCardProps {
     vendor: string;
     status: string;
     amount: string;
+    items?: any[];
+    activity?: any[];
+    paymentProofUrl?: string; // Mock for download
 }
 
 export default function OrderCard({
@@ -14,41 +24,82 @@ export default function OrderCard({
     date,
     vendor,
     status,
-    amount
+    amount,
+    items,
+    activity,
+    paymentProofUrl
 }: OrderCardProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
 
     let statusColor = "bg-slate-100 text-slate-600";
     if (status === "Invoice Generated") statusColor = "bg-cyan-50 text-cyan-500";
     if (status === "Payment Sent") statusColor = "bg-orange-50 text-orange-400";
+    if (status === "Completed" || status === "Delivered") statusColor = "bg-green-50 text-green-600";
+    if (status === "Awaiting Response" || status === "Order Placed") statusColor = "bg-slate-100 text-slate-600";
 
     return (
-        <div className="bg-white rounded-xl border border-slate-100 p-6 flex flex-col md:flex-row items-center justify-between gap-4 hover:shadow-md transition-shadow cursor-pointer">
-            <div>
-                <h3 className="text-slate-900 font-bold mb-1">{id}</h3>
-                <p className="text-slate-400 text-xs">{date}</p>
+        <div className="bg-white rounded-xl border border-slate-100 overflow-hidden transition-all hover:shadow-md">
+            {/* Header Row */}
+            <div
+                className={cn("p-6 flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer", isExpanded && "border-b border-slate-100 bg-slate-50/50")}
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <div>
+                    <h3 className="text-slate-900 font-bold mb-1">{id}</h3>
+                    <p className="text-slate-400 text-xs">{date}</p>
+                </div>
+
+                <div className="flex-1 md:ml-12">
+                    <span className="font-bold text-brand">{vendor}</span>
+                </div>
+
+                <div className="flex-1">
+                    <span className={cn("px-3 py-1.5 rounded-lg text-xs font-bold", statusColor)}>
+                        {status}
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-12">
+                    <span className="font-bold text-slate-900">{amount}</span>
+                    <button className="p-1 rounded-full hover:bg-slate-100 transition-colors">
+                        <ChevronDown className={cn("w-5 h-5 text-brand transition-transform", isExpanded && "rotate-180")} />
+                    </button>
+                </div>
             </div>
 
-            <div className="flex-1 md:ml-12">
-                <span className={cn(
-                    "font-bold",
-                    vendor === "CleanPro Ltd" ? "text-brand" : // Just varying colors based on screenshot if needed, but standardizing to brand or specific logic
-                        vendor === "OfficeMax Direct" ? "text-brand" :
-                            "text-brand"
-                )}>
-                    {vendor}
-                </span>
-            </div>
+            {/* Expanded Content */}
+            {isExpanded && (
+                <div className="p-6 animate-in slide-in-from-top-4 duration-300">
+                    {/* Items and Progress */}
+                    <OrderItemsList items={items || []} totalAmount={amount} />
 
-            <div className="flex-1">
-                <span className={cn("px-3 py-1.5 rounded-lg text-xs font-bold", statusColor)}>
-                    {status}
-                </span>
-            </div>
+                    <OrderProgress status={status} paymentProofUrl={paymentProofUrl} />
 
-            <div className="flex items-center gap-12">
-                <span className="font-bold text-slate-900">{amount}</span>
-                <ChevronDown className="w-5 h-5 text-brand" />
-            </div>
+                    <OrderActivityFeed events={activity || []} />
+
+                    {/* Actions Footer */}
+                    <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-slate-100">
+                        <button
+                            className="flex items-center gap-2 px-4 py-2 border border-brand text-brand rounded-lg text-sm font-bold hover:bg-cyan-50 transition-colors"
+                        >
+                            <RefreshCw className="w-4 h-4" />
+                            Reorder
+                        </button>
+                        <button
+                            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 transition-colors"
+                        >
+                            <FileText className="w-4 h-4" />
+                            Download Invoice
+                        </button>
+                        <button
+                            onClick={() => setIsExpanded(false)}
+                            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 transition-colors"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

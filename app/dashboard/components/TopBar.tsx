@@ -1,43 +1,55 @@
-import { Bell, Search, ChevronDown, Building2 } from 'lucide-react';
+import { Bell, Search, ChevronDown, User, ShoppingCart } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function TopBar() {
     return (
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-40 ml-64">
-            <div className="flex items-center gap-4">
-                <button className="flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                    <Building2 className="w-4 h-4 text-slate-500" />
-                    Headquarters - Tbilisi
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                </button>
-            </div>
+        <div className="h-16 px-8 border-b border-slate-200 bg-white flex items-center justify-between sticky top-0 z-20">
 
-            <div className="flex items-center flex-1 max-w-xl mx-8">
-                <div className="relative w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input
-                        type="text"
-                        placeholder="Search vendors, items, or invoices..."
-                        className="w-full pl-10 pr-4 py-2 bg-slate-50 border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all placeholder:text-slate-400"
-                    />
+            {/* Search Bar - hidden on mobile, visible on large screens */}
+            <div className="hidden lg:flex flex-1 max-w-xl relative mx-8">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-4 w-4 text-slate-400" />
                 </div>
+                <input
+                    type="text"
+                    className="block w-full pl-10 pr-3 py-2 border-none rounded-full leading-5 bg-slate-100 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-0 sm:text-sm"
+                    placeholder="Search vendors, items, or invoices..."
+                />
             </div>
 
-            <div className="flex items-center gap-4">
-                <button className="relative p-2 text-slate-500 hover:bg-slate-50 rounded-full transition-colors">
-                    <Bell className="w-5 h-5" />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-6 ml-auto">
+                {/* Notifications */}
+                <button className="relative p-1 rounded-full text-slate-400 hover:text-slate-500 focus:outline-none">
+                    <span className="sr-only">View notifications</span>
+                    <Bell className="h-6 w-6" />
+                    <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center border-2 border-white">
+                        3
+                    </span>
                 </button>
 
-                <div className="h-8 w-px bg-slate-200" />
+                {/* Shopping Cart - NEW */}
+                <button className="relative p-1 rounded-full text-brand/80 hover:text-brand focus:outline-none transition-colors hidden md:block">
+                    <span className="sr-only">View basket</span>
+                    <div className="bg-brand/10 p-2 rounded-full">
+                        <ShoppingCart className="h-5 w-5" />
+                    </div>
+                    <span className="absolute -top-1 -right-1 block h-5 w-5 rounded-full bg-yellow-400 text-[10px] font-bold text-slate-900 flex items-center justify-center border-2 border-white">
+                        12
+                    </span>
+                </button>
 
-                <button className="flex items-center gap-2 hover:bg-slate-50 p-1.5 rounded-full pr-3 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-medium text-sm">
+                {/* User Profile */}
+                <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
+                    <div className="h-9 w-9 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
                         AC
                     </div>
-                    <span className="text-sm font-medium text-slate-700">Acme Corp</span>
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                </button>
+                    <div className="hidden md:flex items-center cursor-pointer">
+                        <span className="text-sm font-bold text-slate-700 mr-1">Acme Corp</span>
+                        <ChevronDown className="h-4 w-4 text-slate-400" />
+                    </div>
+                </div>
             </div>
-        </header>
+        </div>
     );
 }

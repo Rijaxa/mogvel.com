@@ -12,18 +12,20 @@ import {
     HelpCircle,
     Settings,
     LogOut,
-    MessageSquare
+    MessageSquare,
+    LayoutGrid, // Added
+    Package // Added
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard/company' },
-    { icon: RotateCw, label: 'Stock and Reorder', href: '/dashboard/stock' },
+    { icon: LayoutGrid, label: 'Dashboard', href: '/dashboard/company' },
+    { icon: Package, label: 'Stock and Reorder', href: '/dashboard/stock' },
     { icon: ClipboardList, label: 'Order Management', href: '/dashboard/orders' },
-    { icon: Users, label: 'Catalogues & Vendors', href: '#' },
-    { icon: BarChart3, label: 'Analytics & Benchmarking', href: '#' },
-    { icon: FileText, label: 'Contracts & Compliance', href: '#' },
-    { icon: MessageSquare, label: 'Requests (RFQs / RFPs)', href: '#' },
+    { icon: Users, label: 'Catalogues & Vendors', href: '/dashboard/catalogues' },
+    { icon: BarChart3, label: 'Analytics & Benchmarking', href: '/dashboard/analytics' },
+    { icon: FileText, label: 'Contracts & Compliance', href: '/dashboard/contracts' },
+    { icon: MessageSquare, label: 'Requests (RFQs / RFPs)', href: '/dashboard/requests' },
 ];
 
 const bottomItems = [

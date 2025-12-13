@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard/company' },
-    { icon: RotateCw, label: 'Stock and Reorder', href: '#' },
+    { icon: RotateCw, label: 'Stock and Reorder', href: '/dashboard/stock' },
     { icon: ClipboardList, label: 'Order Management', href: '#' },
     { icon: Users, label: 'Catalogues & Vendors', href: '#' },
     { icon: BarChart3, label: 'Analytics & Benchmarking', href: '#' },

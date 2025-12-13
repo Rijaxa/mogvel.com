@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowRight, TrendingDown } from 'lucide-react';
+import { ArrowRight, TrendingDown, CheckSquare } from 'lucide-react';
 
 export default function Hero() {
     return (
@@ -30,15 +30,11 @@ export default function Hero() {
 
                     <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
                         <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full border border-brand flex items-center justify-center">
-                                <div className="w-2.5 h-2.5 rounded-full bg-brand" />
-                            </div>
+                            <CheckSquare className="w-5 h-5 text-brand" strokeWidth={2.5} />
                             14-day free trial
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full border border-brand flex items-center justify-center">
-                                <div className="w-2.5 h-2.5 rounded-full bg-brand" />
-                            </div>
+                            <CheckSquare className="w-5 h-5 text-brand" strokeWidth={2.5} />
                             No credit card required
                         </div>
                     </div>

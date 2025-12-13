@@ -1,6 +1,11 @@
 import { Box, Download, Plus, AlertTriangle } from 'lucide-react';
 
-export default function StockStats() {
+interface StockStatsProps {
+    onReorderAll?: () => void;
+    onAddStock?: () => void;
+}
+
+export default function StockStats({ onReorderAll, onAddStock }: StockStatsProps) {
     return (
         <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-8">
             {/* Metrics Row */}
@@ -40,11 +45,17 @@ export default function StockStats() {
                         <Download className="w-4 h-4" />
                         Export CSV
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors shadow-sm">
+                    <button
+                        onClick={onReorderAll}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors shadow-sm"
+                    >
                         <AlertTriangle className="w-4 h-4" />
                         Reorder All Critical (4)
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-brand rounded-lg hover:bg-brand/90 transition-colors shadow-sm">
+                    <button
+                        onClick={onAddStock}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-brand rounded-lg hover:bg-brand/90 transition-colors shadow-sm"
+                    >
                         <Plus className="w-4 h-4" />
                         Add Stock
                     </button>

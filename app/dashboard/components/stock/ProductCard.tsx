@@ -10,6 +10,8 @@ interface ProductCardProps {
     lastOrder: string;
     vendor: string;
     isCritical?: boolean;
+    onReorder?: () => void;
+    onManage?: () => void;
 }
 
 export default function ProductCard({
@@ -20,7 +22,9 @@ export default function ProductCard({
     consumption,
     lastOrder,
     vendor,
-    isCritical
+    isCritical,
+    onReorder,
+    onManage
 }: ProductCardProps) {
     const stockPercentage = (currentStock / maxStock) * 100;
 
@@ -67,15 +71,20 @@ export default function ProductCard({
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-                <button className={cn(
-                    "py-2 px-4 rounded-lg text-sm font-bold text-white transition-colors shadow-sm",
-                    isCritical
-                        ? "bg-brand hover:bg-brand/90"
-                        : "bg-brand hover:bg-brand/90"
-                )}>
+                <button
+                    onClick={onReorder}
+                    className={cn(
+                        "py-2 px-4 rounded-lg text-sm font-bold text-white transition-colors shadow-sm",
+                        isCritical
+                            ? "bg-brand hover:bg-brand/90"
+                            : "bg-brand hover:bg-brand/90"
+                    )}>
                     Reorder
                 </button>
-                <button className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-bold text-orange-500 border border-orange-200 hover:bg-orange-50 transition-colors">
+                <button
+                    onClick={onManage}
+                    className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-bold text-orange-500 border border-orange-200 hover:bg-orange-50 transition-colors"
+                >
                     <Edit3 className="w-4 h-4" />
                     Manage
                 </button>

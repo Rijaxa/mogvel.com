@@ -24,7 +24,7 @@ export default function DashboardLayout({
                 isCollapsed ? "ml-20" : "ml-64"
             )}>
                 <TopBar />
-                <main className="p-8">
+                <main className="p-8 pb-32">
                     {children}
                 </main>
             </div>

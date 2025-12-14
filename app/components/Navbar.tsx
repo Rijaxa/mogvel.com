@@ -12,7 +12,7 @@ export default function Navbar() {
 
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
                 <Link href="#" className="hover:text-slate-900">Features</Link>
-                <Link href="#" className="hover:text-slate-900">Pricing</Link>
+                <Link href="#pricing" className="hover:text-slate-900">Pricing</Link>
                 <Link href="#" className="hover:text-slate-900">About</Link>
                 <Link href="#" className="hover:text-slate-900">Support</Link>
             </div>

@@ -85,7 +85,7 @@ export default function Pricing() {
     const [isAnnual, setIsAnnual] = useState(false);
 
     return (
-        <section className="py-24 bg-slate-50">
+        <section id="pricing" className="py-24 bg-slate-50">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-16">

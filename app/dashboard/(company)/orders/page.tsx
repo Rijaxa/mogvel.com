@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import OrderTabs from '../components/orders/OrderTabs';
-import OrderCard from '../components/orders/OrderCard';
+import OrderProgress from '../../components/orders/OrderProgress';
+import OrderCard from '../../components/orders/OrderCard';
+import OrderTabs from '../../components/orders/OrderTabs';
 
 const orders = [
     {

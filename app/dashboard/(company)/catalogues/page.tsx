@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import CatalogueView from '../components/catalogues/CatalogueView';
-import VendorView from '../components/catalogues/VendorView';
+import CatalogueView from '../../components/catalogues/CatalogueView';
+import VendorView from '../../components/catalogues/VendorView';
 
 export default function CataloguesPage() {
     const [activeTab, setActiveTab] = useState<'products' | 'vendors'>('products');
@@ -30,8 +30,8 @@ export default function CataloguesPage() {
                 <button
                     onClick={() => setActiveTab('products')}
                     className={`flex-1 md:flex-none px-8 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'products'
-                            ? 'bg-white text-slate-900 shadow-sm'
-                            : 'text-slate-500 hover:text-slate-700'
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
                         }`}
                 >
                     Search by Products
@@ -39,8 +39,8 @@ export default function CataloguesPage() {
                 <button
                     onClick={() => setActiveTab('vendors')}
                     className={`flex-1 md:flex-none px-8 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'vendors'
-                            ? 'bg-white text-slate-900 shadow-sm'
-                            : 'text-slate-500 hover:text-slate-700'
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-700'
                         }`}
                 >
                     Search by Vendors

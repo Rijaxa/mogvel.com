@@ -6,13 +6,13 @@ import {
     getSpendByCategory,
     getSpendByDepartment,
     getOrderFrequency
-} from '../lib/mockAnalyticsData';
+} from '../../lib/mockAnalyticsData';
 
-import KPIGrid from '../components/analytics/KPIGrid';
-import SpendingCharts from '../components/analytics/SpendingCharts';
-import BenchmarkingSection from '../components/analytics/BenchmarkingSection';
-import VendorAnalytics from '../components/analytics/VendorAnalytics';
-import DeliveryCostSection from '../components/analytics/DeliveryCostSection';
+import KPIGrid from '../../components/analytics/KPIGrid';
+import SpendingCharts from '../../components/analytics/SpendingCharts';
+import BenchmarkingSection from '../../components/analytics/BenchmarkingSection';
+import VendorAnalytics from '../../components/analytics/VendorAnalytics';
+import DeliveryCostSection from '../../components/analytics/DeliveryCostSection';
 import { Download } from 'lucide-react';
 
 export default function AnalyticsPage() {

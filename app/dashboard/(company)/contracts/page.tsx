@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import ContractStats from '../components/contracts/ContractStats';
-import ContractCard from '../components/contracts/ContractCard';
-import ContractUploadZone from '../components/contracts/ContractUploadZone';
+import ContractCard from '../../components/contracts/ContractCard';
+import ContractStats from '../../components/contracts/ContractStats';
+import ContractUploadZone from '../../components/contracts/ContractUploadZone';
 import { Search, Filter } from 'lucide-react';
 
 const mockContracts = [
@@ -48,8 +48,8 @@ export default function ContractsPage() {
                             key={tab}
                             onClick={() => setFilter(tab)}
                             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filter === tab
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                ? 'bg-white text-slate-900 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             {tab}

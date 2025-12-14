@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
-import RequestCard, { RequestCardProps } from '../components/requests/RequestCard';
-import CreateRequestModal from '../components/requests/CreateRequestModal';
+import RequestCard, { RequestCardProps } from '../../components/requests/RequestCard';
+import CreateRequestModal from '../../components/requests/CreateRequestModal';
 
 const initialRequests: RequestCardProps[] = [
     { id: 'RFQ-2847', title: 'Industrial Air Filters', status: 'active', quantity: 50, dueDate: '25.3.2025', responseCount: 3 },

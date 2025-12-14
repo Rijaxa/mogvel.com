@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import StockStats from '../components/stock/StockStats';
-import FilterSortBar from '../components/stock/FilterSortBar';
-import ProductCard from '../components/stock/ProductCard';
-import ReorderModal from '../components/stock/ReorderModal';
-import ManageStockModal from '../components/stock/ManageStockModal';
-import BulkReorderModal from '../components/stock/BulkReorderModal';
+import StockStats from '../../components/stock/StockStats';
+import FilterSortBar from '../../components/stock/FilterSortBar';
+import ProductCard from '../../components/stock/ProductCard';
+import ReorderModal from '../../components/stock/ReorderModal';
+import ManageStockModal from '../../components/stock/ManageStockModal';
+import BulkReorderModal from '../../components/stock/BulkReorderModal';
 
 const products = [
     {

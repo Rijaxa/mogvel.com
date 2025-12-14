@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import StatsCard from '../components/StatsCard';
-import { BenchmarkingChart, ForecastingChart } from '../components/Charts';
-import ActiveVendorsTable from '../components/ActiveVendorsTable';
-import LowStockModal from '../components/LowStockModal';
+import StatsCard from '../../components/StatsCard';
+import { BenchmarkingChart, ForecastingChart } from '../../components/Charts';
+import ActiveVendorsTable from '../../components/ActiveVendorsTable';
+import LowStockModal from '../../components/LowStockModal';
+import RecentActivity from '../../components/RecentActivity';
 import { Box, Users, DollarSign } from 'lucide-react';
 
 export default function DashboardPage() {

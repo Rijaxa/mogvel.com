@@ -22,7 +22,7 @@ const navItems = [
     { icon: Package, label: 'Product Catalogue', href: '/dashboard/vendor/catalogue' },
     { icon: Truck, label: 'Orders & Deliveries', href: '/dashboard/vendor/orders' },
     { icon: Users, label: 'Clients', href: '/dashboard/vendor/clients' },
-    { icon: BarChart3, label: 'Analytics & Sales Trends', href: '#' },
+    { icon: BarChart3, label: 'Analytics & Sales Trends', href: '/dashboard/vendor/analytics' },
     { icon: Megaphone, label: 'Promotions & Loyalty', href: '#' },
 ];
 

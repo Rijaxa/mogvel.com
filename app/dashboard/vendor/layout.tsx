@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import TopBar from '../components/TopBar'; // Reusing TopBar for now, can be specialized if needed
+import TopBar from '../components/vendor/VendorTopBar';
 import VendorSidebar from '../components/VendorSidebar';
 
 export default function VendorDashboardLayout({

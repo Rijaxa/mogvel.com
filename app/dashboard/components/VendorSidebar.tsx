@@ -21,7 +21,7 @@ const navItems = [
     { icon: LayoutGrid, label: 'Dashboard', href: '/dashboard/vendor' },
     { icon: Package, label: 'Product Catalogue', href: '/dashboard/vendor/catalogue' },
     { icon: Truck, label: 'Orders & Deliveries', href: '/dashboard/vendor/orders' },
-    { icon: Users, label: 'Clients', href: '#' },
+    { icon: Users, label: 'Clients', href: '/dashboard/vendor/clients' },
     { icon: BarChart3, label: 'Analytics & Sales Trends', href: '#' },
     { icon: Megaphone, label: 'Promotions & Loyalty', href: '#' },
 ];

@@ -21,9 +21,9 @@ export default function Navbar() {
                 <Link href="/dashboard/company" className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
                     Company Login
                 </Link>
-                <button className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
+                <Link href="/dashboard/vendor" className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
                     Vendor Login
-                </button>
+                </Link>
             </div>
         </nav>
     );

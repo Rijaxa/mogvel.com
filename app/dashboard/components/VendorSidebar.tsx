@@ -18,8 +18,8 @@ import {
 import { cn } from '@/lib/utils';
 
 const navItems = [
-    { icon: LayoutGrid, label: 'Dashboard', href: ('/dashboard/vendor') },
-    { icon: Package, label: 'Product Catalogue', href: '#' },
+    { icon: LayoutGrid, label: 'Dashboard', href: '/dashboard/vendor' },
+    { icon: Package, label: 'Product Catalogue', href: '/dashboard/vendor/catalogue' },
     { icon: Truck, label: 'Orders & Deliveries', href: '#' },
     { icon: Users, label: 'Clients', href: '#' },
     { icon: BarChart3, label: 'Analytics & Sales Trends', href: '#' },

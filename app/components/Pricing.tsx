@@ -107,7 +107,10 @@ export default function Pricing() {
                         </span>
                         <button
                             onClick={() => setIsAnnual(!isAnnual)}
-                            className="relative w-14 h-8 bg-brand rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand/20"
+                            className={cn(
+                                "relative w-14 h-8 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand/20",
+                                isAnnual ? "bg-brand" : "bg-slate-300"
+                            )}
                         >
                             <div className={cn(
                                 "absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-200",

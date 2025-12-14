@@ -23,7 +23,7 @@ const navItems = [
     { icon: Truck, label: 'Orders & Deliveries', href: '/dashboard/vendor/orders' },
     { icon: Users, label: 'Clients', href: '/dashboard/vendor/clients' },
     { icon: BarChart3, label: 'Analytics & Sales Trends', href: '/dashboard/vendor/analytics' },
-    { icon: Megaphone, label: 'Promotions & Loyalty', href: '#' },
+    { icon: Megaphone, label: 'Promotions & Loyalty', href: '/dashboard/vendor/promotions' },
 ];
 
 const bottomItems = [

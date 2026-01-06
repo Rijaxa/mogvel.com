@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
+    const { isCompanyLoggedIn } = useAuth();
+
     return (
         <nav className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
             <div className="flex items-center gap-2">
@@ -18,8 +23,11 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-4">
-                <Link href="/dashboard/company" className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
-                    Company Login
+                <Link
+                    href={isCompanyLoggedIn ? "/dashboard/company" : "/company/login"}
+                    className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
+                >
+                    {isCompanyLoggedIn ? "Company Dashboard" : "Company Login"}
                 </Link>
                 <Link href="/dashboard/vendor" className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
                     Vendor Login

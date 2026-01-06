@@ -1,7 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Footer() {
+    const { isCompanyLoggedIn } = useAuth();
+
     return (
         <footer>
             {/* CTA Section */}
@@ -59,7 +64,11 @@ export default function Footer() {
                             <h4 className="text-white font-bold mb-4">Access</h4>
                             <ul className="space-y-3 text-sm text-slate-400">
                                 <li><Link href="#" className="hover:text-white transition-colors">Vendor Login</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-colors">Company Login</Link></li>
+                                <li>
+                                    <Link href={isCompanyLoggedIn ? "/dashboard/company" : "/company/login"} className="hover:text-white transition-colors">
+                                        {isCompanyLoggedIn ? "Company Dashboard" : "Company Login"}
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     </div>

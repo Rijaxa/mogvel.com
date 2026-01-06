@@ -32,12 +32,7 @@ export default function StockStats({ onReorderAll, onAddStock }: StockStatsProps
                             <span className="text-2xl font-bold text-slate-900">4</span>
                         </div>
                     </div>
-                    <div>
-                        <p className="text-slate-500 text-sm font-medium mb-1">Stock Health</p>
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl font-bold text-slate-900">20% Healthy</span>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div className="flex items-center gap-3">

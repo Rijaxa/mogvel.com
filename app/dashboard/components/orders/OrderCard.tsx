@@ -33,9 +33,25 @@ export default function OrderCard({
 
     let statusColor = "bg-slate-100 text-slate-600";
     if (status === "Invoice Generated") statusColor = "bg-cyan-50 text-cyan-500";
-    if (status === "Payment Sent") statusColor = "bg-orange-50 text-orange-400";
+    if (status === "Payment Sent" || status === "Proof Uploaded") statusColor = "bg-orange-50 text-orange-400";
+    if (status === "Payment Verified") statusColor = "bg-blue-50 text-blue-500";
     if (status === "Completed" || status === "Delivered") statusColor = "bg-green-50 text-green-600";
-    if (status === "Awaiting Response" || status === "Order Placed") statusColor = "bg-slate-100 text-slate-600";
+    if (status === "Awaiting Response" || status === "Vendor Response" || status === "Order Placed") statusColor = "bg-yellow-50 text-yellow-600";
+
+    const handleCancel = () => {
+        if (confirm("Are you sure you want to cancel this order?")) {
+            // Mock cancel logic
+            alert("Order cancellation requested.");
+        }
+    };
+
+    const handleViewInvoice = () => {
+        alert("Opening invoice viewer...");
+    };
+
+    const handleUploadProof = () => {
+        alert("Opening file uploader...");
+    };
 
     return (
         <div className="bg-white rounded-xl border border-slate-100 overflow-hidden transition-all hover:shadow-md">
@@ -49,17 +65,17 @@ export default function OrderCard({
                     <p className="text-slate-400 text-xs">{date}</p>
                 </div>
 
-                <div className="flex-1 md:ml-12">
+                <div className="flex-1 md:ml-12 text-center md:text-left">
                     <span className="font-bold text-brand">{vendor}</span>
                 </div>
 
-                <div className="flex-1">
-                    <span className={cn("px-3 py-1.5 rounded-lg text-xs font-bold", statusColor)}>
+                <div className="flex-1 text-center md:text-left">
+                    <span className={cn("px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap", statusColor)}>
                         {status}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-12">
+                <div className="flex items-center gap-12 w-full md:w-auto justify-between md:justify-end">
                     <span className="font-bold text-slate-900">{amount}</span>
                     <button className="p-1 rounded-full hover:bg-slate-100 transition-colors">
                         <ChevronDown className={cn("w-5 h-5 text-brand transition-transform", isExpanded && "rotate-180")} />
@@ -73,7 +89,13 @@ export default function OrderCard({
                     {/* Items and Progress */}
                     <OrderItemsList items={items || []} totalAmount={amount} />
 
-                    <OrderProgress status={status} paymentProofUrl={paymentProofUrl} />
+                    <OrderProgress
+                        status={status}
+                        paymentProofUrl={paymentProofUrl}
+                        onCancelOrder={handleCancel}
+                        onViewInvoice={handleViewInvoice}
+                        onUploadProof={handleUploadProof}
+                    />
 
                     <OrderActivityFeed events={activity || []} />
 

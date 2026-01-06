@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import OrderProgress from '../../components/orders/OrderProgress';
 import OrderCard from '../../components/orders/OrderCard';
 import OrderTabs from '../../components/orders/OrderTabs';
 
@@ -10,10 +9,10 @@ const orders = [
         id: 'ORD-2024-007',
         date: '16.11.2024',
         vendor: 'OfficeMax Direct',
-        status: 'Awaiting Response', // Ongoing
+        status: 'Vendor Response', // Ongoing
         amount: '£459.50',
         items: [
-            { name: 'Office Paper A4 (500 sheets)', quantity: 20, unitPrice: 12.99 },
+            { name: 'Office Paper A4 (500 sheets)', quantity: 20, unitPrice: 12.99, image: '/products/paper.png' },
             { name: 'Ballpoint Pens (Box of 50)', quantity: 15, unitPrice: 8.50 },
             { name: 'Stapler Heavy Duty', quantity: 8, unitPrice: 15.99 },
         ],
@@ -22,46 +21,69 @@ const orders = [
         ]
     },
     {
+        id: 'ORD-2024-010',
+        date: '16.11.2024',
+        vendor: 'SafetyFirst Co',
+        status: 'Invoice Generated', // Ongoing/In Progress
+        amount: '£825.00',
+        items: [
+            { name: 'Disposable Gloves (Box)', quantity: 55, unitPrice: 15.00, image: '/products/gloves.png' }
+        ],
+        activity: [
+            { title: 'Invoice uploaded by SafetyFirst Co', date: '2024-11-16 12:00', actor: 'Vendor' },
+            { title: 'Vendor accepted the order', date: '2024-11-16 10:30', actor: 'Vendor' },
+            { title: 'Order submitted successfully', date: '2024-11-16 09:00', actor: 'System' }
+        ]
+    },
+    {
         id: 'ORD-2024-005',
         date: '12.11.2024',
         vendor: 'TechSupply Hub',
-        status: 'Dispatched', // In Progress
+        status: 'Payment Verified', // In Progress
         amount: '£1125.00',
         paymentProofUrl: 'example.pdf',
         items: [
             { name: 'Wireless Mouse', quantity: 50, unitPrice: 22.50 }
         ],
         activity: [
-            { title: 'Order dispatched by vendor - tracking code #X2045', date: '2024-11-13 10:00', actor: 'Vendor' },
-            { title: 'Payment verified by TechSupply Hub', date: '2024-11-12 14:30', actor: 'Vendor' },
-            { title: 'Order submitted successfully', date: '2024-11-12 09:00', actor: 'System' },
+            { title: 'Payment verified by Vendor', date: '2024-11-12 14:30', actor: 'Vendor' },
+            { title: 'Proof uploaded', date: '2024-11-12 12:00', actor: 'Company' },
+            { title: 'Invoice generated', date: '2024-11-12 10:00', actor: 'Vendor' }
         ]
     },
     {
         id: 'ORD-2024-001',
         date: '10.11.2024',
         vendor: 'OfficeMax Direct',
-        status: 'Completed', // Completed
+        status: 'Delivered', // Completed
         amount: '£1249.50',
         paymentProofUrl: 'example.pdf',
         items: [
-            { name: 'Office Paper A4 (500 sheets)', quantity: 50, unitPrice: 12.99 },
+            { name: 'Office Paper A4 (500 sheets)', quantity: 50, unitPrice: 12.99, image: '/products/paper.png' },
             { name: 'Ballpoint Pens (Box of 50)', quantity: 10, unitPrice: 8.50 },
         ],
         activity: [
             { title: 'Order delivered successfully', date: '2024-11-15 16:00', actor: 'Vendor' },
-            { title: 'Order dispatched', date: '2024-11-12 10:00', actor: 'System' },
+            { title: 'Payment verified', date: '2024-11-12 10:00', actor: 'Vendor' },
         ]
     },
-    // Added more mock data to fill out categories
     {
         id: 'ORD-2024-009',
         date: '17.11.2024',
         vendor: 'CleanPro Ltd',
-        status: 'Invoice Generated', // In Progress
+        status: 'Payment Sent', // In Progress
         amount: '£632.00',
-        items: [{ name: 'Trash Bags', quantity: 20, unitPrice: 31.60 }],
-        activity: [{ title: 'Invoice generated', date: '2024-11-17 10:00', actor: 'System' }]
+        items: [{ name: 'Trash Bags', quantity: 20, unitPrice: 31.60, image: '/products/bags.png' }],
+        activity: [{ title: 'Payment marked as sent', date: '2024-11-17 11:00', actor: 'Company' }, { title: 'Invoice generated', date: '2024-11-17 10:00', actor: 'System' }]
+    },
+    {
+        id: 'ORD-2024-011',
+        date: '18.11.2024',
+        vendor: 'HygieneCo',
+        status: 'Proof Uploaded', // In Progress
+        amount: '£250.00',
+        items: [{ name: 'Cleaning Wipes', quantity: 20, unitPrice: 12.50, image: '/products/wipes.png' }],
+        activity: [{ title: 'Proof uploaded', date: '2024-11-18 13:00', actor: 'Company' }]
     },
     {
         id: 'ORD-2024-002',
@@ -69,7 +91,7 @@ const orders = [
         vendor: 'CleanPro Ltd',
         status: 'Delivered', // Completed
         amount: '£842.00',
-        items: [{ name: 'Hand Sanitizer', quantity: 10, unitPrice: 84.20 }],
+        items: [{ name: 'Hand Sanitizer', quantity: 10, unitPrice: 84.20, image: '/products/sanitizer.png' }],
         activity: [{ title: 'Delivered', date: '2024-11-10 14:00', actor: 'Vendor' }]
     }
 ];
@@ -78,8 +100,8 @@ export default function OrderPage() {
     const [activeTab, setActiveTab] = useState('ongoing');
 
     const getStatusCategory = (status: string) => {
-        if (['Awaiting Response', 'Order Placed'].includes(status)) return 'ongoing';
-        if (['Dispatched', 'Shipped', 'Invoice Generated', 'Payment Sent'].includes(status)) return 'inProgress';
+        if (['Awaiting Response', 'Vendor Response', 'Invoice Generated'].includes(status)) return 'ongoing';
+        if (['Payment Sent', 'Proof Uploaded', 'Payment Verified', 'Dispatched'].includes(status)) return 'inProgress';
         if (['Completed', 'Delivered'].includes(status)) return 'completed';
         return 'ongoing';
     };

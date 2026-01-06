@@ -13,6 +13,7 @@ interface ManageStockModalProps {
         currentStock: number;
         consumption: number;
         period: string;
+        image?: string;
     }
 }
 
@@ -29,9 +30,18 @@ export default function ManageStockModal({ isOpen, onClose, type, initialData }:
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
                 <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                    <div>
-                        <h2 className="text-xl font-bold text-slate-900 mb-1">{title}</h2>
-                        <p className="text-slate-500 text-xs">{subtitle}</p>
+                    <div className="flex gap-4 items-center">
+                        {initialData?.image && (
+                            <img
+                                src={initialData.image}
+                                alt={initialData.name}
+                                className="w-12 h-12 rounded-lg object-cover border border-slate-200"
+                            />
+                        )}
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-900 mb-1">{title}</h2>
+                            <p className="text-slate-500 text-xs">{subtitle}</p>
+                        </div>
                     </div>
                     <button
                         onClick={onClose}

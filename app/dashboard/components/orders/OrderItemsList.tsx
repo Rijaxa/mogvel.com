@@ -4,6 +4,7 @@ interface OrderItem {
     name: string;
     quantity: number;
     unitPrice: number;
+    image?: string;
 }
 
 interface OrderItemsListProps {
@@ -25,8 +26,16 @@ export default function OrderItemsList({ items, totalAmount }: OrderItemsListPro
                 {items.map((item, index) => (
                     <div key={index} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                                <Box className="w-5 h-5 text-slate-400" />
+                            <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 shrink-0">
+                                {item.image ? (
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <Box className="w-5 h-5 text-slate-400" />
+                                )}
                             </div>
                             <span className="font-bold text-slate-900 text-sm">{item.name}</span>
                         </div>
@@ -35,7 +44,7 @@ export default function OrderItemsList({ items, totalAmount }: OrderItemsListPro
                                 <p className="text-xs text-slate-500 mb-1">Quantity</p>
                                 <p className="font-bold text-slate-900">{item.quantity}</p>
                             </div>
-                            <div className="text-right">
+                            <div className="text-right hidden sm:block">
                                 <p className="text-xs text-slate-500 mb-1">Unit Price</p>
                                 <p className="font-bold text-slate-900">£{item.unitPrice.toFixed(2)}</p>
                             </div>

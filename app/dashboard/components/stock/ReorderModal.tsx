@@ -12,6 +12,7 @@ interface ReorderModalProps {
     recommendedQuantity: number;
     unitPrice: number;
     defaultVendor: string;
+    image?: string;
 }
 
 const vendors = [
@@ -30,7 +31,8 @@ export default function ReorderModal({
     maxStock,
     recommendedQuantity,
     unitPrice,
-    defaultVendor
+    defaultVendor,
+    image
 }: ReorderModalProps) {
     const [quantity, setQuantity] = useState(recommendedQuantity);
     const [selectedVendor, setSelectedVendor] = useState(defaultVendor);
@@ -63,9 +65,18 @@ export default function ReorderModal({
                         Confirm reorder details and review supplier options.
                     </p>
 
-                    <div className="mb-6">
-                        <h3 className="font-bold text-slate-900 mb-1">{productName}</h3>
-                        <p className="text-sm text-slate-500">{category}</p>
+                    <div className="flex gap-4 mb-6">
+                        {image && (
+                            <img
+                                src={image}
+                                alt={productName}
+                                className="w-16 h-16 rounded-lg object-cover border border-slate-200"
+                            />
+                        )}
+                        <div>
+                            <h3 className="font-bold text-slate-900 mb-1">{productName}</h3>
+                            <p className="text-sm text-slate-500">{category}</p>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded-xl">
@@ -118,8 +129,8 @@ export default function ReorderModal({
                                     key={index}
                                     onClick={() => setSelectedVendor(vendor.name)}
                                     className={`flex justify-between items-center p-3 border rounded-lg cursor-pointer transition-all ${selectedVendor === vendor.name
-                                            ? 'border-brand bg-cyan-50/30'
-                                            : 'border-slate-100 hover:bg-slate-50'
+                                        ? 'border-brand bg-cyan-50/30'
+                                        : 'border-slate-100 hover:bg-slate-50'
                                         }`}
                                 >
                                     <span className="font-bold text-slate-900 text-sm">{vendor.name}</span>

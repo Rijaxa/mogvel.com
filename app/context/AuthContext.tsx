@@ -28,7 +28,7 @@ function AuthContent({ children }: { children: React.ReactNode }) {
         if (status === 'authenticated' && session?.user) {
             setIsCompanyLoggedIn(true);
             setUser({
-                companyName: session.user.name || 'Company User',
+                companyName: session.user.name || 'NinoP',
                 email: session.user.email || '',
             });
             localStorage.setItem('isCompanyLoggedIn', 'true');

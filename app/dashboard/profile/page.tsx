@@ -32,6 +32,20 @@ export default function ProfilePage() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
+            {/* Header with Back Link */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <a href="/dashboard/company" className="text-2xl font-bold text-brand hover:text-teal-600 transition-colors">
+                        Mogvel
+                    </a>
+                    <span className="text-slate-300">/</span>
+                    <span className="text-slate-500 font-medium">Profile</span>
+                </div>
+                <a href="/dashboard/company" className="text-sm font-medium text-slate-500 hover:text-brand transition-colors">
+                    &larr; Back to Dashboard
+                </a>
+            </div>
+
             <div>
                 <h1 className="text-2xl font-bold text-slate-900">My Profile</h1>
                 <p className="text-slate-600">Manage your company details and settings.</p>

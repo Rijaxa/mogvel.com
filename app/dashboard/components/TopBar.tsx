@@ -44,12 +44,12 @@ export default function TopBar() {
                 {/* User Profile */}
                 <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
                     <div className="h-9 w-9 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
-                        {user?.companyName?.substring(0, 2).toUpperCase() || 'CO'}
+                        {user?.companyName?.substring(0, 2).toUpperCase() || 'NP'}
                     </div>
                     <div className="relative group">
                         <div className="hidden md:flex items-center cursor-pointer">
                             <span className="text-sm font-bold text-slate-700 mr-1">
-                                {user?.companyName || 'Guest Company'}
+                                {user?.companyName || 'NinoP'}
                             </span>
                             <ChevronDown className="h-4 w-4 text-slate-400" />
                         </div>

@@ -18,7 +18,18 @@ export default function CompanyLoginPage() {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        loginCompany();
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const companyName = formData.get('companyName') as string || 'Acme Corp';
+        const email = formData.get('email') as string || 'demo@acme.com';
+
+        // For login mode, we might just default to a specific user if the form doesn't have the name field
+        const userToLogin = {
+            companyName: isLogin ? 'Acme Corp' : companyName,
+            email: email
+        };
+
+        loginCompany(userToLogin);
         router.push('/dashboard/company');
         setIsLoading(false);
     };

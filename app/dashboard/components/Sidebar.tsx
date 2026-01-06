@@ -36,6 +36,8 @@ const bottomItems = [
     { icon: HelpCircle, label: 'Help', href: '#' },
 ];
 
+import { useAuth } from '@/app/context/AuthContext';
+
 export default function Sidebar({
     isCollapsed,
     toggleSidebar
@@ -44,6 +46,7 @@ export default function Sidebar({
     toggleSidebar: () => void;
 }) {
     const pathname = usePathname();
+    const { logoutCompany } = useAuth();
 
     return (
         <aside
@@ -125,6 +128,7 @@ export default function Sidebar({
                 })}
 
                 <button
+                    onClick={logoutCompany}
                     className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors group relative",
                         isCollapsed && "justify-center"

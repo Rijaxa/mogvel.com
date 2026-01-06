@@ -1,7 +1,9 @@
 import { Bell, Search, ChevronDown, User, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/app/context/AuthContext';
 
 export default function TopBar() {
+    const { user } = useAuth();
     return (
         <div className="h-16 px-8 border-b border-slate-200 bg-white flex items-center justify-between sticky top-0 z-20">
 
@@ -42,10 +44,12 @@ export default function TopBar() {
                 {/* User Profile */}
                 <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
                     <div className="h-9 w-9 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
-                        AC
+                        {user?.companyName?.substring(0, 2).toUpperCase() || 'CO'}
                     </div>
                     <div className="hidden md:flex items-center cursor-pointer">
-                        <span className="text-sm font-bold text-slate-700 mr-1">Acme Corp</span>
+                        <span className="text-sm font-bold text-slate-700 mr-1">
+                            {user?.companyName || 'Guest Company'}
+                        </span>
                         <ChevronDown className="h-4 w-4 text-slate-400" />
                     </div>
                 </div>

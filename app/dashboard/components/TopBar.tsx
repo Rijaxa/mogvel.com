@@ -46,11 +46,28 @@ export default function TopBar() {
                     <div className="h-9 w-9 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
                         {user?.companyName?.substring(0, 2).toUpperCase() || 'CO'}
                     </div>
-                    <div className="hidden md:flex items-center cursor-pointer">
-                        <span className="text-sm font-bold text-slate-700 mr-1">
-                            {user?.companyName || 'Guest Company'}
-                        </span>
-                        <ChevronDown className="h-4 w-4 text-slate-400" />
+                    <div className="relative group">
+                        <div className="hidden md:flex items-center cursor-pointer">
+                            <span className="text-sm font-bold text-slate-700 mr-1">
+                                {user?.companyName || 'Guest Company'}
+                            </span>
+                            <ChevronDown className="h-4 w-4 text-slate-400" />
+                        </div>
+                        {/* Dropdown Menu */}
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 py-1 hidden group-hover:block transition-all">
+                            <div className="px-4 py-3 border-b border-slate-100">
+                                <p className="text-sm text-slate-900 font-medium truncate">{user?.companyName}</p>
+                                <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                            </div>
+                            <a href="/dashboard/profile" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
+                                My Profile
+                            </a>
+                            {user?.email === 'purtseladze.nino@gmail.com' && (
+                                <a href="/dashboard/admin" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
+                                    Super Admin
+                                </a>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

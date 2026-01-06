@@ -32,36 +32,21 @@ function AuthContent({ children }: { children: React.ReactNode }) {
                 companyName: session.user.name || 'NinoP',
                 email: session.user.email || '',
             });
-            // Overwrite legacy mock data to prevent confusion
-            localStorage.setItem('isCompanyLoggedIn', 'true');
-            localStorage.setItem('companyUser', JSON.stringify({
-                companyName: session.user.name || 'NinoP',
-                email: session.user.email || ''
-            }));
+            // Force Clear Legacy Data silently to keep environment clean
+            localStorage.removeItem('isCompanyLoggedIn');
+            localStorage.removeItem('companyUser');
         } else if (status === 'unauthenticated') {
-            const storedAuth = localStorage.getItem('isCompanyLoggedIn');
-            const storedUser = localStorage.getItem('companyUser');
-
-            // Only use legacy auth if it exists AND we are sure we aren't waiting for NextAuth
-            if (storedAuth === 'true' && storedUser) {
-                // Check if it's the old 'Acme Corp' mock data and potentially ignore it if we want to force Google Login
-                // For now, let's just log it.
-                console.log("🔹 AuthContext: Using stored legacy auth", storedUser);
-                setIsCompanyLoggedIn(true);
-                setUser(JSON.parse(storedUser));
-            } else {
-                setIsCompanyLoggedIn(false);
-                setUser(null);
-            }
+            setIsCompanyLoggedIn(false);
+            setUser(null);
+            // Ensure no legacy data remains
+            localStorage.removeItem('isCompanyLoggedIn');
+            localStorage.removeItem('companyUser');
         }
     }, [status, session]);
 
     const loginCompany = (userData: User) => {
-        // Fallback for non-Google login (demo/mock)
-        setIsCompanyLoggedIn(true);
-        setUser(userData);
-        localStorage.setItem('isCompanyLoggedIn', 'true');
-        localStorage.setItem('companyUser', JSON.stringify(userData));
+        // Deprecated: Legacy login function. Now just warns.
+        console.warn("loginCompany called but we are migrating to NextAuth.");
     };
 
     const logoutCompany = async () => {
@@ -70,10 +55,8 @@ function AuthContent({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('isCompanyLoggedIn');
         localStorage.removeItem('companyUser');
 
-        if (status === 'authenticated') {
-            await signOut({ redirect: false });
-        }
-        router.push('/');
+        // Always sign out of NextAuth
+        await signOut({ redirect: true, callbackUrl: '/' });
     };
 
     return (

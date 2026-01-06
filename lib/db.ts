@@ -6,13 +6,26 @@ const DB_PATH = path.join(process.cwd(), 'data', 'users.json');
 export interface User {
     id: string; // 6-digit company ID
     email: string;
+    password?: string; // Optional for existing Google users, required for new email users
     name: string;
     role: 'user' | 'admin';
     companyDetails?: {
-        businessName?: string;
-        address?: string;
-        phone?: string;
-        website?: string;
+        organisationName?: string; // Organisation name/Trademark
+        legalName?: string;
+        registrationNumber?: string;
+        country?: string; // Default: Georgia
+        city?: string;
+        address?: string; // Company address
+        currency?: string; // Default: GEL
+        contactPerson?: string;
+        phone?: string; // Contact phone
+        contactEmail?: string;
+        logoUrl?: string;
+        numberOfOffices?: string; // Changed to string to handle "1-5", "10+" etc if needed, or simple number input. User just said "Number of offices". Let's stick to string for flexibility in form data or number. Form data is string. Let's use string.
+        vatPayerStatus?: 'vat_payer' | 'not_vat_payer';
+        businessScale?: 'small' | 'medium' | 'large';
+        serviceAreas?: string;
+        website?: string; // Keeping as legacy or extra
         isProfileComplete: boolean;
     };
     createdAt: string;
@@ -41,7 +54,7 @@ export const db = {
 
     getUserByEmail: (email: string): User | undefined => {
         const users = db.getAllUsers();
-        return users.find(u => u.email === email);
+        return users.find(u => u.email.toLowerCase() === email.toLowerCase());
     },
 
     createUser: (user: Omit<User, 'createdAt' | 'id'>): User => {
@@ -66,7 +79,7 @@ export const db = {
 
     updateUser: (email: string, updates: Partial<User>): User | null => {
         const users = db.getAllUsers();
-        const index = users.findIndex(u => u.email === email);
+        const index = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
 
         if (index === -1) return null;
 

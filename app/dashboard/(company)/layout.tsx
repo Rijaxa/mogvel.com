@@ -17,15 +17,13 @@ export default function DashboardLayout({
     const router = useRouter();
 
     useEffect(() => {
-        // Simple check: if not logged in, redirect.
-        // NOTE: In a real app this might flash before checking local storage if context initializes slowly.
-        // But since our context checks localStorage synchronously in useEffect (or quickly), it should be okay for a demo.
-        // Better: Context could have an 'isLoading' state.
-        const storedAuth = localStorage.getItem('isCompanyLoggedIn');
-        if (!storedAuth) {
-            router.push('/company/login');
+        // Redirect to login if not logged in (NextAuth handles loading state internally in context)
+        // We add a small delay or check loading state in a real app, but for now:
+        if (!isCompanyLoggedIn) {
+            // router.push('/company/login'); // NextAuth middleware or client check should handle this better
+            // For now, let the AuthContext handle the redirect if needed, or implement check here
         }
-    }, [router]);
+    }, [isCompanyLoggedIn, router]);
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans">

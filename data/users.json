@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "email": "purtseladze.nino@gmail.com",
+    "password": "$2b$10$mEE/aQ05jp6dtXoNZ6hesuX9BDRtGUCHJHckeIan3DSPF.wWk7pgq",
+    "name": "NinoP",
+    "role": "user",
+    "companyDetails": {
+      "businessName": "NinoP",
+      "isProfileComplete": false
+    },
+    "id": "150422",
+    "createdAt": "2026-01-06T14:56:55.323Z"
+  }
+]

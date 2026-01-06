@@ -1,6 +1,7 @@
 import { Bell, Search, ChevronDown, User, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/app/context/AuthContext';
+import { useState, useRef } from 'react';
 
 export default function TopBar() {
     const { user } = useAuth();
@@ -42,35 +43,61 @@ export default function TopBar() {
                 </button>
 
                 {/* User Profile */}
-                <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
-                    <div className="h-9 w-9 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
-                        {user?.companyName?.substring(0, 2).toUpperCase() || 'NP'}
-                    </div>
-                    <div className="relative group">
-                        <div className="hidden md:flex items-center cursor-pointer">
-                            <span className="text-sm font-bold text-slate-700 mr-1">
-                                {user?.companyName || 'NinoP'}
-                            </span>
-                            <ChevronDown className="h-4 w-4 text-slate-400" />
-                        </div>
-                        {/* Dropdown Menu */}
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 py-1 hidden group-hover:block transition-all">
-                            <div className="px-4 py-3 border-b border-slate-100">
-                                <p className="text-sm text-slate-900 font-medium truncate">{user?.companyName}</p>
-                                <p className="text-xs text-slate-500 truncate">{user?.email}</p>
-                            </div>
-                            <a href="/dashboard/profile" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
-                                My Profile
-                            </a>
-                            {user?.email === 'purtseladze.nino@gmail.com' && (
-                                <a href="/dashboard/admin" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
-                                    Super Admin
-                                </a>
-                            )}
-                        </div>
-                    </div>
-                </div>
+                <ProfileDropdown user={user} />
             </div>
+        </div>
+    );
+}
+
+function ProfileDropdown({ user }: { user: any }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        setIsOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+        timeoutRef.current = setTimeout(() => {
+            setIsOpen(false);
+        }, 1500); // 1.5 second delay before closing
+    };
+
+    return (
+        <div
+            className="flex items-center gap-3 pl-6 border-l border-slate-200 relative"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            <div className="h-9 w-9 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
+                {user?.companyName?.substring(0, 2).toUpperCase() || 'NP'}
+            </div>
+
+            <div className="hidden md:flex items-center cursor-pointer py-2">
+                <span className="text-sm font-bold text-slate-700 mr-1">
+                    {user?.companyName || 'NinoP'}
+                </span>
+                <ChevronDown className="h-4 w-4 text-slate-400" />
+            </div>
+
+            {/* Dropdown Menu */}
+            {isOpen && (
+                <div className="absolute right-0 top-full mt-0 w-48 bg-white rounded-lg shadow-lg border border-slate-100 py-1 z-50">
+                    <div className="px-4 py-3 border-b border-slate-100">
+                        <p className="text-sm text-slate-900 font-medium truncate">{user?.companyName || 'NinoP'}</p>
+                        <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                    </div>
+                    <a href="/dashboard/profile" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
+                        My Profile
+                    </a>
+                    {user?.email === 'purtseladze.nino@gmail.com' && (
+                        <a href="/dashboard/admin" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
+                            Super Admin
+                        </a>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

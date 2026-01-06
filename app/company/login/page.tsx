@@ -14,7 +14,7 @@ export default function CompanyLoginPage() {
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         // Simulate Google Login API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 800));
 
         loginCompany({
             companyName: 'Google Tech Inc.',

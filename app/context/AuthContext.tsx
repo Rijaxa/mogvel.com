@@ -26,19 +26,27 @@ function AuthContent({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (status === 'authenticated' && session?.user) {
+            console.log("🔹 AuthContext: Authenticated with NextAuth", session.user);
             setIsCompanyLoggedIn(true);
             setUser({
                 companyName: session.user.name || 'NinoP',
                 email: session.user.email || '',
             });
+            // Overwrite legacy mock data to prevent confusion
             localStorage.setItem('isCompanyLoggedIn', 'true');
+            localStorage.setItem('companyUser', JSON.stringify({
+                companyName: session.user.name || 'NinoP',
+                email: session.user.email || ''
+            }));
         } else if (status === 'unauthenticated') {
-            // Check for legacy local storage mock auth if not authenticated via NextAuth
-            // This preserves the "demo" functionality if NextAuth isn't configured yet
             const storedAuth = localStorage.getItem('isCompanyLoggedIn');
             const storedUser = localStorage.getItem('companyUser');
 
+            // Only use legacy auth if it exists AND we are sure we aren't waiting for NextAuth
             if (storedAuth === 'true' && storedUser) {
+                // Check if it's the old 'Acme Corp' mock data and potentially ignore it if we want to force Google Login
+                // For now, let's just log it.
+                console.log("🔹 AuthContext: Using stored legacy auth", storedUser);
                 setIsCompanyLoggedIn(true);
                 setUser(JSON.parse(storedUser));
             } else {

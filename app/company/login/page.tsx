@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
+import { signIn } from 'next-auth/react';
 
 export default function CompanyLoginPage() {
     const router = useRouter();
@@ -13,15 +14,7 @@ export default function CompanyLoginPage() {
 
     const handleGoogleLogin = async () => {
         setIsLoading(true);
-        // Simulate Google Login API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        loginCompany({
-            companyName: 'Google Tech Inc.',
-            email: 'admin@googletech.com'
-        });
-        router.push('/dashboard/company');
-        setIsLoading(false);
+        await signIn('google', { callbackUrl: '/dashboard/company' });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {

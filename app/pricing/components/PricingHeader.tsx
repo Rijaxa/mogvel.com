@@ -11,9 +11,7 @@ export default function PricingHeader() {
                 </div>
                 <span className="text-xl font-bold text-slate-900">Mogvel</span>
             </Link>
-            <Link href="/" className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
-                Back to Home
-            </Link>
+
         </header>
     );
 }

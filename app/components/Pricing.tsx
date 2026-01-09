@@ -11,7 +11,7 @@ export default function Pricing() {
         "Inventory & Automated Reordering: Real-time stock monitoring with automated low-stock alerts and reorder flows.",
         "Smart Promotions: Receive instant notifications about discounts and promotions by vendors on specific products.",
         "Full Procurement Dashboard: One-view visibility into total spend, vendor activity, and inventory health.",
-        "Full scale analytics: Total spent, cost efficiency, delivery speed, monthly spending, and cost saving opportunities.",
+        "Full Scale Analytics: Total spent, cost efficiency, delivery speed, monthly spending, and cost saving opportunities.",
         "Sourcing & RFQ Management: Tooling for managing sourcing requests and exporting detailed RFQ reports.",
         "Governance & Compliance Hub: Centralized management for all procurement contracts and compliance documents.",
         "Multi-Branch & Team Support: Multi-location management with internal user roles and team controls.",
@@ -19,24 +19,20 @@ export default function Pricing() {
     ];
 
     return (
-        <section id="pricing" className="py-24 bg-slate-50">
-            <div className="max-w-7xl mx-auto px-6">
+        <section id="pricing" className="py-12 bg-slate-50">
+            <div className="max-w-[1400px] mx-auto px-6">
                 {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-50 text-brand text-sm font-bold mb-6">
-                        <Sparkles className="w-4 h-4" />
-                        Simple, unified pricing
-                    </div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                <div className="text-center max-w-3xl mx-auto mb-8">
+                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">
                         Everything you need in one plan
                     </h2>
-                    <p className="text-slate-500 mb-8">
+                    <p className="text-slate-500 mb-4">
                         Get access to the full Mogvel procurement platform for a flat monthly rate.
                     </p>
                 </div>
 
                 {/* Single Plan Card */}
-                <div className="max-w-4xl mx-auto">
+                <div className="w-full mx-auto">
                     <div className="bg-white rounded-3xl p-8 md:p-12 border border-slate-200 shadow-xl relative overflow-hidden">
                         {/* Decorative background accent */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-50 rounded-full blur-3xl -z-0 translate-x-1/2 -translate-y-1/2 opacity-50" />

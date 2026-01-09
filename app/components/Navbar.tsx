@@ -8,12 +8,12 @@ export default function Navbar() {
 
     return (
         <nav className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 group transition-opacity hover:opacity-80">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg">
                     M
                 </div>
                 <span className="text-xl font-bold text-slate-900">Mogvel</span>
-            </div>
+            </Link>
 
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
                 <Link href="#" className="hover:text-slate-900">Features</Link>

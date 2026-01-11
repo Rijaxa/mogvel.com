@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { register } from '@/app/actions/auth';
+import { registerUser } from '@/actions/auth';
+import { onboardUser } from '@/actions/onboarding';
 
 export default function CompanyLoginPage() {
     const router = useRouter();
@@ -34,22 +35,32 @@ export default function CompanyLoginPage() {
                     setError('Invalid email or password');
                     setIsLoading(false);
                 } else {
-                    router.push('/dashboard/company');
+                    router.push('/dashboard/(company)/orders'); // Temporary redirect to orders as dashboard
                     router.refresh();
                 }
             } else {
                 // Registration
-                const result = await register(formData);
+                const name = formData.get('companyName') as string;
+                // Import from @/actions/auth
+                const result = await registerUser({ email, password, name });
+
                 if (result.error) {
                     setError(result.error);
                     setIsLoading(false);
                 } else {
-                    // Auto login after successful registration
-                    await signIn('credentials', {
+                    // Auto login and then onboard
+                    const loginRes = await signIn('credentials', {
                         email,
                         password,
-                        callbackUrl: '/dashboard/company'
+                        redirect: false
                     });
+
+                    if (!loginRes?.error) {
+                        // Trigger onboarding
+                        await onboardUser(name, 'company');
+                        router.push('/dashboard/(company)/orders');
+                        router.refresh();
+                    }
                 }
             }
         } catch (err) {

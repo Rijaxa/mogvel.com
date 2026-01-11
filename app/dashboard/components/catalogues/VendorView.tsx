@@ -2,6 +2,7 @@
 
 import { Search, Box } from 'lucide-react';
 import VendorRow from './VendorRow';
+import { useEffect, useState } from 'react';
 
 const vendors = [
     { name: 'CleanPro Supplies', isVerified: true, rating: 4.8, stability: 'Stable', stockLevel: 'High Stock', deliverySLA: '99.2%' },
@@ -11,6 +12,14 @@ const vendors = [
 ];
 
 export default function VendorView() {
+    const [vendors, setVendors] = useState<any[]>([]);
+
+    useEffect(() => {
+        import('@/actions/vendors').then(mod => {
+            mod.getLinkedVendors().then(setVendors);
+        });
+    }, []);
+
     return (
         <div>
             {/* Search and Filters */}
@@ -59,10 +68,14 @@ export default function VendorView() {
                 </div>
 
                 <div className="space-y-2">
-                    {vendors.map((vendor, index) => (
-                        // @ts-ignore - TS might complain about enum types matching string literals exactly
+                    {vendors.length > 0 ? vendors.map((vendor, index) => (
+                        // @ts-ignore
                         <VendorRow key={index} {...vendor} />
-                    ))}
+                    )) : (
+                        <div className="py-8 text-center text-slate-500">
+                            No verified vendors linked.
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

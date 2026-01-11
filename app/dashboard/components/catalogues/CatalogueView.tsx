@@ -2,6 +2,7 @@
 
 import { Search, ShoppingCart } from 'lucide-react';
 import CatalogueProductCard from './CatalogueProductCard';
+import { useEffect, useState } from 'react';
 
 const categories = [
     'All Products', 'Office Supplies', 'Hygiene Products', 'Safety Equipment', 'Office Equipment', 'Cleaning Supplies'
@@ -78,6 +79,15 @@ const products = [
 ];
 
 export default function CatalogueView() {
+    const [products, setProducts] = useState<any[]>([]);
+
+    useEffect(() => {
+        // Dynamic import to avoid server action issues if any, or just direct call
+        import('@/actions/products').then(mod => {
+            mod.getProducts().then(setProducts);
+        });
+    }, []);
+
     return (
         <div>
             {/* Search and Filters */}
@@ -98,8 +108,8 @@ export default function CatalogueView() {
                     <button
                         key={idx}
                         className={`px-4 py-1.5 rounded-full text-sm font-bold border transition-colors ${idx === 0
-                                ? 'bg-brand text-white border-brand'
-                                : 'bg-white text-slate-600 border-slate-200 hover:border-brand hover:text-brand'
+                            ? 'bg-brand text-white border-brand'
+                            : 'bg-white text-slate-600 border-slate-200 hover:border-brand hover:text-brand'
                             }`}
                     >
                         {cat}
@@ -109,12 +119,16 @@ export default function CatalogueView() {
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product, index) => (
+                {products.length > 0 ? products.map((product, index) => (
                     <CatalogueProductCard
                         key={index}
                         {...product}
                     />
-                ))}
+                )) : (
+                    <div className="col-span-full text-center py-10 text-slate-500">
+                        No products found.
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -14,7 +14,7 @@ export default function BenchmarkingSection() {
     return (
         <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-8">
             <div className="flex items-center justify-between mb-6">
-                <h4 className="font-bold text-slate-900 text-sm">Procurement Benchmarking</h4>
+                <h4 className="font-bold text-slate-900 text-sm">Market Analytics</h4>
                 <span className="text-green-500 text-xs font-bold bg-green-50 px-2 py-1 rounded-full">
                     15% better than market avg
                 </span>

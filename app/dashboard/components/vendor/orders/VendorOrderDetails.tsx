@@ -1,7 +1,8 @@
 'use client';
 
-import { Check, User, X, MessageCircle, FileText } from 'lucide-react';
+import { Check, User, X, MessageCircle, FileText, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import OrderProgress from '../../orders/OrderProgress';
 
 interface VendorOrderDetailsProps {
     status: 'Incoming' | 'In Progress' | 'Completed';
@@ -109,91 +110,44 @@ export default function VendorOrderDetails({ status, onClose }: VendorOrderDetai
                 </div>
             </div>
 
-            {/* Order Progress (Hidden for Incoming, shown for others) */}
-            {!isIncoming && (
-                <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-6">
-                        <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-brand">
-                            <div className="w-4 h-4 rounded-full border-2 border-current" />
-                        </div>
-                        <h3 className="font-bold text-slate-900">Order Progress</h3>
-                    </div>
-
-                    <div className="flex justify-between items-center relative px-4">
-                        {/* Timeline Line */}
-                        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 -z-10 mx-10" />
-
-                        {/* Steps */}
-                        {[
-                            { active: true, label: 'Order Received' },
-                            { active: true, label: 'Accepted' },
-                            { active: true, label: 'Packed' },
-                            { active: true, label: 'Shipped' },
-                            { active: isCompleted, label: 'Out for Delivery' },
-                            { active: isCompleted, label: 'Delivered' },
-                        ].map((step, idx) => (
-                            <div key={idx} className="flex flex-col items-center gap-2 bg-slate-50/50 px-2">
-                                <div className={cn(
-                                    "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors",
-                                    step.active
-                                        ? "bg-brand border-brand text-white"
-                                        : "bg-white border-slate-300 text-slate-300"
-                                )}>
-                                    {step.active && <Check className="w-4 h-4" />}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+            {/* Order Progress */}
+            <div className="mb-8">
+                <OrderProgress
+                    status={isIncoming ? 'Order Received' : status}
+                    role="vendor"
+                    onAcceptOrder={() => alert("Order Accepted")}
+                    onRejectOrder={() => alert("Order Rejected")}
+                    onViewInvoice={() => alert("Viewing Invoice")}
+                />
+            </div>
 
             {/* Actions or Activity */}
-            {isIncoming ? (
-                <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
-                            <FileText className="w-4 h-4 text-brand" />
-                        </div>
-                        <h3 className="font-bold text-slate-900">Actions</h3>
+            {/* Activities are now handled within OrderProgress or below it */}
+            <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-brand" />
                     </div>
-                    <div className="flex gap-4">
-                        <button className="flex items-center gap-2 bg-brand text-white font-bold px-6 py-3 rounded-xl hover:bg-brand/90 transition-colors shadow-sm shadow-brand/20">
-                            <Check className="w-5 h-5" />
-                            Accept Order
-                        </button>
-                        <button className="flex items-center gap-2 bg-white border border-red-200 text-red-500 font-bold px-6 py-3 rounded-xl hover:bg-red-50 transition-colors">
-                            <X className="w-5 h-5" />
-                            Reject Order
-                        </button>
-                    </div>
+                    <h3 className="font-bold text-slate-900">Order Activity Feed</h3>
                 </div>
-            ) : (
-                <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
-                            <FileText className="w-4 h-4 text-brand" />
+                <div className="bg-white rounded-xl border border-slate-100 p-4">
+                    <div className="relative pl-6 pb-6 border-l-2 border-brand ml-2">
+                        <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand border-4 border-white" />
+                        <p className="font-bold text-slate-900 text-sm">Order marked as Delivered</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] text-slate-400">2024-11-12 16:00</span>
+                            <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold">Vendor</span>
                         </div>
-                        <h3 className="font-bold text-slate-900">Order Activity Feed</h3>
                     </div>
-                    <div className="bg-white rounded-xl border border-slate-100 p-4">
-                        <div className="relative pl-6 pb-6 border-l-2 border-brand ml-2">
-                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand border-4 border-white" />
-                            <p className="font-bold text-slate-900 text-sm">Order marked as Delivered</p>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="text-[10px] text-slate-400">2024-11-12 16:00</span>
-                                <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold">Vendor</span>
-                            </div>
-                        </div>
-                        <div className="relative pl-6 border-l-2 border-slate-200 ml-2">
-                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-4 border-white" />
-                            <p className="font-bold text-slate-500 text-sm">Order Dispatched</p>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="text-[10px] text-slate-400">2024-11-12 09:00</span>
-                            </div>
+                    <div className="relative pl-6 border-l-2 border-slate-200 ml-2">
+                        <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-4 border-white" />
+                        <p className="font-bold text-slate-500 text-sm">Order Dispatched</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] text-slate-400">2024-11-12 09:00</span>
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
 
             <div className="flex justify-between pt-6 border-t border-slate-200">
                 <button className="flex items-center gap-2 text-slate-600 font-bold text-sm hover:text-slate-900 border border-slate-200 bg-white px-4 py-2 rounded-lg hover:bg-slate-50">

@@ -20,6 +20,11 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
     const [currency, setCurrency] = useState(details.currency || defaultCountry.currency);
     const [selectedPhoneCode, setSelectedPhoneCode] = useState(defaultCountry.phoneCode); // Default, but should check existing phone
     const [phoneNumber, setPhoneNumber] = useState(details.phone ? details.phone.replace(/^\+\d+\s?/, '') : ''); // Strip code if exists
+    const [address, setAddress] = useState(details.address || '');
+    const [selectedCity, setSelectedCity] = useState(details.city || '');
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [skipSearch, setSkipSearch] = useState(false);
 
     // Effects
     useEffect(() => {
@@ -30,12 +35,51 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
 
     const activeCountry = countries.find(c => c.name === selectedCountryName) || defaultCountry;
 
+    // Address Autocomplete Logic
+    useEffect(() => {
+        if (address.length <= 2) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        const timer = setTimeout(async () => {
+            try {
+                // Photon API (Free OSM Geocoding)
+                const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(address)}&limit=5`);
+                const data = await response.json();
+
+                // Filter for Georgia (country_code: ge)
+                const geSuggestions = data.features.filter((f: any) =>
+                    f.properties.countrycode === 'GE' ||
+                    f.properties.country === 'Georgia' ||
+                    f.properties.state?.includes('Georgia')
+                ).map((f: any) => {
+                    const p = f.properties;
+                    const parts = [p.name, p.street, p.housenumber, p.city, p.postcode].filter(Boolean);
+                    return {
+                        label: [p.name || p.street, p.housenumber, p.city].filter(Boolean).join(', '),
+                        full: [p.name, p.street, p.housenumber, p.city, p.postcode].filter(Boolean).join(', '),
+                        city: p.city || p.town || p.village
+                    };
+                });
+
+                setSuggestions(geSuggestions);
+                setShowSuggestions(geSuggestions.length > 0);
+            } catch (error) {
+                console.error('Autocomplete error:', error);
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timer);
+    }, [address]);
+
     async function handleSubmit(formData: FormData) {
         setIsSaving(true);
         setMessage(null);
 
         // Pre-process phone number to include code
-        const fullPhone = `${selectedPhoneCode} ${phoneNumber}`;
+        const fullPhone = `+995 ${phoneNumber}`;
         formData.set('phone', fullPhone);
 
         // Ensure currency matches country
@@ -110,29 +154,19 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
                     </h3>
                 </div>
                 <div className="p-6 grid md:grid-cols-2 gap-6">
-                    {/* Country Dropdown */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">Country <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                            <select
-                                name="country"
-                                value={selectedCountryName}
-                                onChange={(e) => setSelectedCountryName(e.target.value)}
-                                required
-                                className="input-field pl-10"
-                            >
-                                {countries.map(c => (
-                                    <option key={c.code} value={c.name}>{c.name}</option>
-                                ))}
-                            </select>
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xl">{activeCountry.flag}</span>
-                        </div>
-                    </div>
+                    {/* Country - Hidden, locked to Georgia */}
+                    <input type="hidden" name="country" value="Georgia" />
 
                     {/* City Dropdown */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-700">City <span className="text-red-500">*</span></label>
-                        <select name="city" defaultValue={details.city || ''} required className="input-field">
+                        <select
+                            name="city"
+                            value={selectedCity}
+                            onChange={(e) => setSelectedCity(e.target.value)}
+                            required
+                            className="input-field"
+                        >
                             <option value="" disabled>Select City</option>
                             {activeCountry.cities.map(city => (
                                 <option key={city} value={city}>{city}</option>
@@ -141,20 +175,59 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
                         </select>
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
+                    <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-700">Company address <span className="text-red-500">*</span></label>
-                        {/* Google Maps Autocomplete Placeholder - Real implementation needs API Key */}
-                        {/* <div id="google-maps-autocomplete" /> */}
                         <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                            <input
-                                name="address"
-                                type="text"
-                                defaultValue={details.address || ''}
-                                required
-                                className="input-field pl-10"
-                                placeholder="Start typing address..."
-                            />
+                            <div className="flex gap-0 border border-slate-200 rounded-lg overflow-hidden shadow-sm focus-within:border-brand focus-within:ring-1 focus-within:ring-brand">
+                                <div className="flex items-center px-3 bg-slate-50 border-r border-slate-200 text-slate-400">
+                                    <MapPin className="w-4 h-4" />
+                                </div>
+                                <input
+                                    name="address"
+                                    type="text"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    onFocus={() => address.length > 2 && suggestions.length > 0 && setShowSuggestions(true)}
+                                    onBlur={() => {
+                                        // Delay closing to allow clicking suggestions
+                                        setTimeout(() => setShowSuggestions(false), 200);
+                                    }}
+                                    required
+                                    className="w-full px-4 py-2 border-none outline-none text-slate-900 bg-white placeholder:text-slate-400"
+                                    placeholder="Start typing address..."
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            {/* Suggestions Dropdown */}
+                            {showSuggestions && suggestions.length > 0 && (
+                                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                                    {suggestions.map((s, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            onClick={() => {
+                                                setSkipSearch(true);
+                                                setAddress(s.label);
+                                                if (s.city) {
+                                                    // Try to match suggestion city with our dropdown list
+                                                    const matchedCity = activeCountry.cities.find(c =>
+                                                        c.toLowerCase() === s.city.toLowerCase()
+                                                    );
+                                                    if (matchedCity) setSelectedCity(matchedCity);
+                                                    else setSelectedCity("Other");
+                                                }
+                                                setShowSuggestions(false);
+                                                setSuggestions([]);
+                                            }}
+                                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 border-b border-slate-50 last:border-0 flex flex-col"
+                                        >
+                                            <span className="font-bold text-slate-900">{s.label}</span>
+                                            {s.city && <span className="text-xs text-slate-500">{s.city}, Georgia</span>}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -166,36 +239,17 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
                     {/* Phone Dropdown */}
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-slate-700">Contact phone <span className="text-red-500">*</span></label>
-                        <div className="flex gap-2">
-                            <div className="relative w-32 shrink-0">
-                                <select
-                                    className="input-field pl-8"
-                                    value={selectedCountryName} // Sync with country or separate? User "Make the phone number country code a dropdown with a flag"
-                                    onChange={(e) => {
-                                        const c = countries.find(x => x.name === e.target.value);
-                                        if (c) {
-                                            setSelectedPhoneCode(c.phoneCode);
-                                            // Optional: Sync country field too? "Make the country dropdown similar... Default currency connected to the country field."
-                                            // Usually phone code is independent but defaults to country. Let's keep it somewhat independent or synced.
-                                            // Simpler UI: Just a dropdown of codes with flags.
-                                        }
-                                    }}
-                                >
-                                    {countries.map(c => (
-                                        <option key={c.code} value={c.name}>{c.phoneCode}</option>
-                                    ))}
-                                </select>
-                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-lg">
-                                    {countries.find(c => c.phoneCode === selectedPhoneCode)?.flag || '🌍'}
-                                </span>
+                        <div className="flex gap-0 border border-slate-200 rounded-lg overflow-hidden shadow-sm focus-within:border-brand focus-within:ring-1 focus-within:ring-brand">
+                            <div className="flex items-center px-4 bg-slate-50 border-r border-slate-200 text-slate-600 font-medium text-sm">
+                                +995
                             </div>
                             <input
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                name="phoneNumberInput" // We construct real 'phone' in onSubmit
+                                name="phoneNumberInput"
                                 type="tel"
                                 required
-                                className="input-field flex-1"
+                                className="w-full px-4 py-2 border-none outline-none text-slate-900 bg-white placeholder:text-slate-400"
                                 placeholder="555 123 456"
                             />
                         </div>

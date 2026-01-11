@@ -1,36 +1,44 @@
-import { Check, Activity, FileText, Upload, Eye } from 'lucide-react';
+import { Check, ThumbsUp, ThumbsDown, Banknote, Clock, CreditCard, CheckCircle2, Truck, XCircle, ShoppingCart, Activity, FileText, Upload, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface OrderProgressProps {
     status: string;
+    role: 'buyer' | 'vendor';
     paymentProofUrl?: string;
     onViewInvoice?: () => void;
     onUploadProof?: () => void;
     onCancelOrder?: () => void;
+    onAcceptOrder?: () => void;
+    onRejectOrder?: () => void;
 }
 
-const steps = [
-    { id: 'response', label: 'Vendor Response' },
-    { id: 'invoice', label: 'Invoice Generated' },
-    { id: 'payment', label: 'Payment Sent' },
-    { id: 'proof', label: 'Proof Uploaded' },
-    { id: 'verified', label: 'Payment Verified' },
-    { id: 'delivered', label: 'Delivered' }
+const getSteps = (role: 'buyer' | 'vendor') => [
+    { id: 'submitted', label: role === 'buyer' ? 'Order Submitted' : 'Order Received', icon: Check },
+    { id: 'response', label: 'Vendor Response', icon: ThumbsUp },
+    { id: 'invoice', label: 'Invoice Generated', icon: Banknote },
+    { id: 'payment', label: 'Payment Progress', icon: Clock },
+    { id: 'verified', label: 'Payment Verified', icon: CreditCard },
+    { id: 'delivered', label: 'In Delivery', icon: Truck },
+    { id: 'completed', label: 'Completed', icon: CheckCircle2 }
 ];
 
 export default function OrderProgress({
     status,
+    role,
     paymentProofUrl,
     onViewInvoice,
     onUploadProof,
-    onCancelOrder
+    onCancelOrder,
+    onAcceptOrder,
+    onRejectOrder
 }: OrderProgressProps) {
+    const steps = getSteps(role);
 
-    // Determine current step index based on status string
+    // Determine current step index based on status string (7 steps)
     let currentStepIndex = 0;
-    if (status === 'Awaiting Response' || status === 'Vendor Response') currentStepIndex = 0;
-    else if (status === 'Vendor Accepted') currentStepIndex = 1;
-    else if (status === 'Invoice Generated') currentStepIndex = 2;
+    if (status === 'Order Placed' || status === 'Order Submitted' || status === 'Order Received') currentStepIndex = 0;
+    else if (status === 'Awaiting Response' || status === 'Vendor Response') currentStepIndex = 1;
+    else if (status === 'Vendor Accepted' || status === 'Invoice Generated') currentStepIndex = 2;
     else if (status === 'Payment Sent') currentStepIndex = 3;
     else if (status === 'Proof Uploaded') currentStepIndex = 4;
     else if (status === 'Payment Verified' || status === 'Dispatched') currentStepIndex = 5;
@@ -94,8 +102,7 @@ export default function OrderProgress({
                                             "bg-white border-slate-200 text-slate-300 shadow-none"
                                 )}>
                                     {isCompleted ? <Check className="w-5 h-5" /> :
-                                        isActive ? <div className="w-3 h-3 bg-brand rounded-full" /> :
-                                            <div className="w-2 h-2 bg-slate-200 rounded-full" />
+                                        <step.icon className={cn("w-5 h-5", isActive ? "text-brand" : "text-slate-300")} />
                                     }
                                 </div>
 
@@ -116,29 +123,58 @@ export default function OrderProgress({
             </div>
 
             <div className="flex flex-wrap items-center gap-3 mt-8 pt-6 border-t border-slate-100">
-                {/* Cancel Button - Only active early */}
-                {currentStepIndex < 2 && (
-                    <button
-                        onClick={onCancelOrder}
-                        className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-500 rounded-lg text-sm font-bold hover:bg-red-50 transition-colors mr-auto"
-                    >
-                        <span>Cancel Order</span>
-                    </button>
+                {/* Role-based actions */}
+                {role === 'buyer' ? (
+                    <>
+                        {/* Cancel Button - Only active early for buyer */}
+                        {currentStepIndex < 2 && (
+                            <button
+                                onClick={onCancelOrder}
+                                className="flex items-center gap-2 px-5 py-2 border border-red-200 text-red-500 rounded-full text-sm font-bold hover:bg-red-50 transition-all mr-auto shadow-sm"
+                            >
+                                <XCircle className="w-4 h-4" />
+                                <span>Cancel Order</span>
+                            </button>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        {/* Vendor Actions - Accept/Reject */}
+                        {currentStepIndex === 0 && (
+                            <>
+                                <button
+                                    onClick={onAcceptOrder}
+                                    className="flex items-center gap-2 px-6 py-2 bg-brand text-white rounded-full text-sm font-bold hover:bg-brand/90 transition-all shadow-md shadow-brand/20"
+                                >
+                                    <ThumbsUp className="w-4 h-4" />
+                                    <span>Accept Order</span>
+                                </button>
+                                <button
+                                    onClick={onRejectOrder}
+                                    className="flex items-center gap-2 px-6 py-2 border border-red-200 text-red-500 rounded-full text-sm font-bold hover:bg-red-50 transition-all"
+                                >
+                                    <ThumbsDown className="w-4 h-4" />
+                                    <span>Reject Order</span>
+                                </button>
+                            </>
+                        )}
+                    </>
                 )}
 
-                {/* View Invoice - Available after invoice generation */}
+                {/* Common actions */}
+                <div className="flex-1" />
+
                 {(currentStepIndex >= 2 || status === 'Invoice Generated') && (
                     <button
                         onClick={onViewInvoice}
-                        className="flex items-center gap-2 px-4 py-2 border border-brand text-brand rounded-lg text-sm font-bold hover:bg-cyan-50 transition-colors ml-auto sm:ml-0"
+                        className="flex items-center gap-2 px-4 py-2 border border-brand text-brand rounded-lg text-sm font-bold hover:bg-cyan-50 transition-colors"
                     >
                         <Eye className="w-4 h-4" />
                         View Invoice
                     </button>
                 )}
 
-                {/* Upload Proof - Available after invoice gen until verified */}
-                {(currentStepIndex >= 2 && currentStepIndex < 5 && status !== 'Payment Verified' && status !== 'Proof Uploaded') && (
+                {(role === 'buyer' && currentStepIndex >= 2 && currentStepIndex < 5 && status !== 'Payment Verified' && status !== 'Proof Uploaded') && (
                     <button
                         onClick={onUploadProof}
                         className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand/90 transition-colors shadow-sm"

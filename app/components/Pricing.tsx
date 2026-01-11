@@ -19,8 +19,8 @@ export default function Pricing() {
     ];
 
     return (
-        <section id="pricing" className="py-12 bg-slate-50">
-            <div className="max-w-[1400px] mx-auto px-6">
+        <section id="pricing" className="py-12 md:py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <div className="text-center max-w-3xl mx-auto mb-8">
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">

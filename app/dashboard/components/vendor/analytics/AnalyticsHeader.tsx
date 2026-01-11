@@ -6,7 +6,7 @@ export default function AnalyticsHeader() {
     return (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
-                <h1 className="text-2xl font-bold text-slate-900">Analytics & Sales Trends</h1>
+                <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
                 <p className="text-slate-500">Monitor sales performance, client engagement, and operational efficiency</p>
             </div>
 

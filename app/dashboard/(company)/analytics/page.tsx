@@ -26,7 +26,7 @@ export default function AnalyticsPage() {
         <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Analytics & Benchmarking</h1>
+                    <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
                     <p className="text-slate-500">Track procurement performance, spending trends, and supplier efficiency.</p>
                 </div>
 
@@ -55,7 +55,7 @@ export default function AnalyticsPage() {
                 />
 
                 <h3 className="text-sm font-bold text-brand flex items-center gap-2 mb-4">
-                    <span className="w-1 h-4 bg-brand rounded-full" /> Procurement Benchmarking
+                    <span className="w-1 h-4 bg-brand rounded-full" /> Market Analytics
                 </h3>
                 <BenchmarkingSection />
 

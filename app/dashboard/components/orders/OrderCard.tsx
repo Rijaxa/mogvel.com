@@ -91,6 +91,7 @@ export default function OrderCard({
 
                     <OrderProgress
                         status={status}
+                        role="buyer"
                         paymentProofUrl={paymentProofUrl}
                         onCancelOrder={handleCancel}
                         onViewInvoice={handleViewInvoice}

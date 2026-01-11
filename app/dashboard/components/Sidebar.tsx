@@ -25,8 +25,7 @@ const navItems = [
     { icon: Package, label: 'Stock and Reorder', href: '/dashboard/stock' },
     { icon: ClipboardList, label: 'Order Management', href: '/dashboard/orders' },
     { icon: Users, label: 'Catalogues & Vendors', href: '/dashboard/catalogues' },
-    { icon: BarChart3, label: 'Analytics & Benchmarking', href: '/dashboard/analytics' },
-    { icon: FileText, label: 'Contracts & Compliance', href: '/dashboard/contracts' },
+    { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
     { icon: MessageSquare, label: 'Requests (RFQs / RFPs)', href: '/dashboard/requests' },
 ];
 

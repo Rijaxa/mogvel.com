@@ -117,6 +117,38 @@ async function main() {
     })
 
     console.log({ vendorUser, companyUser })
+
+    // 5. Create Sample Orders
+    // Order 1: Pending
+    await prisma.order.create({
+        data: {
+            orderNumber: 'ORD-2025-001',
+            companyId: companyOrg.id,
+            vendorId: vendorOrg.id,
+            status: 'pending',
+            urgency: 'medium',
+            subtotal: 50.00,
+            grandTotal: 50.00,
+            currency: 'GEL',
+            createdBy: companyUser.id
+        }
+    })
+
+    // Order 2: Delivered
+    await prisma.order.create({
+        data: {
+            orderNumber: 'ORD-2025-002',
+            companyId: companyOrg.id,
+            vendorId: vendorOrg.id,
+            status: 'delivered',
+            urgency: 'low',
+            subtotal: 120.50,
+            grandTotal: 120.50,
+            currency: 'GEL',
+            createdBy: companyUser.id,
+            deliveredAt: new Date()
+        }
+    })
 }
 
 main()

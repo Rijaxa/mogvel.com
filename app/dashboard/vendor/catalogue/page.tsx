@@ -15,7 +15,7 @@ export default function VendorCataloguePage() {
                     producer="PaperCo Industries"
                     description="A4 Paper 80gsm White Premium"
                     quantity="Quantity: Box of 500 sheets"
-                    price="£12.99"
+                    price="₾12.99"
                     status="Active"
                     stockCount="85 units"
                     stockLevel={85}
@@ -25,7 +25,7 @@ export default function VendorCataloguePage() {
                     producer="HygieneFirst Ltd"
                     description="Hand Sanitizer Gel 70% Alcohol"
                     quantity="Volume: 500ml"
-                    price="£7.90"
+                    price="₾7.90"
                     status="Low Stock"
                     lowStockWarning={false} // actually just low stock
                     stockCount="25 units"
@@ -37,7 +37,7 @@ export default function VendorCataloguePage() {
                     producer="SafetyPro Manufacturing"
                     description="Nitrile Gloves Powder-Free"
                     quantity="Quantity: Box of 100"
-                    price="£16.50"
+                    price="₾16.50"
                     status="Active"
                     lowStockWarning={true} // mimicking the 'Out of Stock' look or critical low
                     stockCount="12 units"
@@ -51,7 +51,7 @@ export default function VendorCataloguePage() {
                     producer="CleanMaster Solutions"
                     description="All-Surface Cleaner Concentrate"
                     quantity="Volume: 5L"
-                    price="£24.50"
+                    price="₾24.50"
                     status="Active"
                     stockCount="65 units"
                     stockLevel={65}

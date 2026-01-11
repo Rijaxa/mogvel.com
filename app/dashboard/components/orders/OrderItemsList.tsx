@@ -46,11 +46,11 @@ export default function OrderItemsList({ items, totalAmount }: OrderItemsListPro
                             </div>
                             <div className="text-right hidden sm:block">
                                 <p className="text-xs text-slate-500 mb-1">Unit Price</p>
-                                <p className="font-bold text-slate-900">£{item.unitPrice.toFixed(2)}</p>
+                                <p className="font-bold text-slate-900">₾{item.unitPrice.toFixed(2)}</p>
                             </div>
                             <div className="text-right w-20">
                                 <p className="text-xs text-slate-500 mb-1">Total</p>
-                                <p className="font-bold text-slate-900">£{(item.quantity * item.unitPrice).toFixed(2)}</p>
+                                <p className="font-bold text-slate-900">₾{(item.quantity * item.unitPrice).toFixed(2)}</p>
                             </div>
                         </div>
                     </div>

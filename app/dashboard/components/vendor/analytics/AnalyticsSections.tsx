@@ -13,10 +13,10 @@ export default function AnalyticsSections({ onOpenModal }: { onOpenModal: (type:
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                        { name: 'Hand Sanitizer 500ml', revenue: '£12,500', growth: '+18%' },
-                        { name: 'Office Paper A4', revenue: '£9,800', growth: '+12%' },
-                        { name: 'Cleaning Wipes', revenue: '£8,400', growth: '-3%' },
-                        { name: 'Safety Gloves', revenue: '£7,200', growth: '+25%' },
+                        { name: 'Hand Sanitizer 500ml', revenue: '₾12,500', growth: '+18%' },
+                        { name: 'Office Paper A4', revenue: '₾9,800', growth: '+12%' },
+                        { name: 'Cleaning Wipes', revenue: '₾8,400', growth: '-3%' },
+                        { name: 'Safety Gloves', revenue: '₾7,200', growth: '+25%' },
                     ].map((prod, idx) => (
                         <div key={idx} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
                             <div className="flex justify-between items-start mb-2">

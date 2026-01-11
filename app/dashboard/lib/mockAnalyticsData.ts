@@ -31,14 +31,19 @@ const rawOrders: RawOrder[] = [
 // 1. KPI Metrics
 export const getKPIMetrics = () => {
     const totalSpend = rawOrders.reduce((acc, order) => acc + order.amount, 0);
-    const totalOrders = rawOrders.length;
-    const lateOrders = rawOrders.filter(o => o.status === 'Late').length;
+
+    // Calculate average monthly spend
+    const monthlyData: Record<string, number> = {};
+    rawOrders.forEach(order => {
+        const month = new Date(order.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+        monthlyData[month] = (monthlyData[month] || 0) + order.amount;
+    });
+    const monthCount = Object.keys(monthlyData).length;
+    const avgMonthlySpend = monthCount > 0 ? totalSpend / monthCount : 0;
 
     return {
-        totalSpend: `€${totalSpend.toLocaleString()}`,
-        costEfficiency: '23%', // Hardcoded benchmark calculation for now
-        deliverySpeed: '40%', // Hardcoded
-        supplierReliability: `${((1 - (lateOrders / totalOrders)) * 100).toFixed(1)}%`
+        totalSpend: `₾${totalSpend.toLocaleString()}`,
+        monthlySpend: `₾${Math.round(avgMonthlySpend).toLocaleString()}`
     };
 };
 
@@ -81,17 +86,20 @@ export const getSpendByDepartment = () => {
     })).sort((a, b) => b.value - a.value);
 };
 
-// 5. Order Frequency (Area) - Mocking a smoother curve derived from raw counts
+// 5. Order Frequency (Area) - Monthly order counts
 export const getOrderFrequency = () => {
-    // Simplified mock curve based on screenshot
     return [
-        { name: 'Week 1', value: 40 },
-        { name: 'Week 2', value: 45 },
-        { name: 'Week 3', value: 35 },
-        { name: 'Week 4', value: 50 },
-        { name: 'Week 5', value: 55 },
-        { name: 'Week 6', value: 60 },
-        { name: 'Week 7', value: 58 },
-        { name: 'Week 8', value: 65 },
+        { name: 'Jan', value: 40 },
+        { name: 'Feb', value: 45 },
+        { name: 'Mar', value: 35 },
+        { name: 'Apr', value: 50 },
+        { name: 'May', value: 55 },
+        { name: 'Jun', value: 60 },
+        { name: 'Jul', value: 58 },
+        { name: 'Aug', value: 65 },
+        { name: 'Sep', value: 62 },
+        { name: 'Oct', value: 70 },
+        { name: 'Nov', value: 75 },
+        { name: 'Dec', value: 68 },
     ];
 };

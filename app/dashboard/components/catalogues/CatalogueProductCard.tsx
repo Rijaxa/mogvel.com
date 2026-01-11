@@ -63,7 +63,7 @@ export default function CatalogueProductCard({
                 <div className="flex items-end justify-between mb-6">
                     <div>
                         <p className="text-sm text-slate-400 mb-1">Price</p>
-                        <p className="text-xl font-bold text-slate-900">£{price.toFixed(2)}</p>
+                        <p className="text-xl font-bold text-slate-900">₾{price.toFixed(2)}</p>
                     </div>
                     <div className="text-right">
                         <p className="text-sm text-slate-400 mb-1">Vendor</p>

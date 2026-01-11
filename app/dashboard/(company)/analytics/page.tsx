@@ -10,9 +10,6 @@ import {
 
 import KPIGrid from '../../components/analytics/KPIGrid';
 import SpendingCharts from '../../components/analytics/SpendingCharts';
-import BenchmarkingSection from '../../components/analytics/BenchmarkingSection';
-import VendorAnalytics from '../../components/analytics/VendorAnalytics';
-import DeliveryCostSection from '../../components/analytics/DeliveryCostSection';
 import { Download } from 'lucide-react';
 
 export default function AnalyticsPage() {
@@ -53,21 +50,6 @@ export default function AnalyticsPage() {
                     spendByDepartment={spendByDepartment}
                     orderFrequency={orderFrequency}
                 />
-
-                <h3 className="text-sm font-bold text-brand flex items-center gap-2 mb-4">
-                    <span className="w-1 h-4 bg-brand rounded-full" /> Market Analytics
-                </h3>
-                <BenchmarkingSection />
-
-                <h3 className="text-sm font-bold text-brand flex items-center gap-2 mb-4">
-                    <span className="w-1 h-4 bg-brand rounded-full" /> Vendor Analytics
-                </h3>
-                <VendorAnalytics />
-
-                <h3 className="text-sm font-bold text-brand flex items-center gap-2 mb-4">
-                    <span className="w-1 h-4 bg-brand rounded-full" /> Delivery & Logistics Analytics
-                </h3>
-                <DeliveryCostSection />
             </div>
         </div>
     );

@@ -7,7 +7,7 @@ export default function AnalyticsKPIs() {
     const kpis = [
         {
             label: 'Total Revenue (This Month)',
-            value: '£72,450',
+            value: '₾72,450',
             change: '+12%',
             trend: 'up',
             icon: DollarSign,
@@ -17,7 +17,7 @@ export default function AnalyticsKPIs() {
         },
         {
             label: 'Average Order Value',
-            value: '£340',
+            value: '₾340',
             sub: 'per order',
             change: '+12% vs prior quarter',
             trend: 'up',

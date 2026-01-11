@@ -25,7 +25,7 @@ export default function SpendingCharts({
             return (
                 <div className="bg-white p-2 border border-slate-100 shadow-lg rounded-lg text-xs">
                     <p className="font-bold">{label}</p>
-                    <p className="text-brand">€{payload[0].value.toLocaleString()}</p>
+                    <p className="text-brand">₾{payload[0].value.toLocaleString()}</p>
                 </div>
             );
         }
@@ -55,6 +55,7 @@ export default function SpendingCharts({
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={spendByCategory.slice(0, 5)}>
                             <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} interval={0} />
+                            <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickFormatter={(value) => `₾${value / 1000}k`} />
                             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
                             <Bar dataKey="value" fill="#17BEBB" radius={[4, 4, 0, 0]} barSize={40} />
                         </BarChart>
@@ -70,7 +71,7 @@ export default function SpendingCharts({
                         <div key={idx}>
                             <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
                                 <span>{dept.name}</span>
-                                <span>€{dept.value.toLocaleString()}</span>
+                                <span>₾{dept.value.toLocaleString()}</span>
                             </div>
                             <div className="w-full bg-slate-100 rounded-full h-2">
                                 <div
@@ -102,6 +103,8 @@ export default function SpendingCharts({
                                     <stop offset="95%" stopColor="#17BEBB" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
+                            <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                             <Tooltip />
                             <Area type="monotone" dataKey="value" stroke="#17BEBB" fillOpacity={1} fill="url(#colorValue)" />
                         </AreaChart>

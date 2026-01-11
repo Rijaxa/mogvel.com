@@ -20,7 +20,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                 if (!email || !password) return null;
 
-                const user = db.getUserByEmail(email);
+                const user = await db.user.findUnique({ where: { email } });
                 if (!user || !user.password) return null;
 
                 const passwordsMatch = await bcrypt.compare(password, user.password);
@@ -40,11 +40,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
         async session({ session, token }) {
             if (session.user?.email) {
-                const dbUser = db.getUserByEmail(session.user.email);
+                const dbUser = await db.user.findUnique({ where: { email: session.user.email } });
                 if (dbUser) {
-                    session.user.id = dbUser.id; // 6-digit ID
+                    session.user.id = dbUser.id;
                     (session.user as any).role = dbUser.role;
-                    (session.user as any).companyDetails = dbUser.companyDetails;
+                    // Parse companyDetails if it's a string (since we changed it to String for SQLite compatibility if needed, or if it is JSON type handled by Prisma)
+                    // In our schema we defined it as String? for SQLite, so we parse it.
+                    try {
+                        (session.user as any).companyDetails = dbUser.companyDetails
+                            ? JSON.parse(dbUser.companyDetails as string)
+                            : null;
+                    } catch (e) {
+                        (session.user as any).companyDetails = null;
+                    }
                 }
             }
             return session;

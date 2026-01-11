@@ -12,21 +12,25 @@ export async function register(formData: FormData) {
         return { error: "Missing required fields" };
     }
 
-    const existingUser = db.getUserByEmail(email);
+    const existingUser = await db.user.findUnique({ where: { email } });
     if (existingUser) {
         return { error: "User already exists with this email" };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.createUser({
-        email,
-        password: hashedPassword,
-        name: companyName,
-        role: 'user', // Default role
-        companyDetails: {
-            businessName: companyName,
-            isProfileComplete: false
+    const initialCompanyDetails = {
+        businessName: companyName,
+        isProfileComplete: false
+    };
+
+    await db.user.create({
+        data: {
+            email,
+            password: hashedPassword,
+            name: companyName,
+            role: 'user', // Default role
+            companyDetails: JSON.stringify(initialCompanyDetails)
         }
     });
 

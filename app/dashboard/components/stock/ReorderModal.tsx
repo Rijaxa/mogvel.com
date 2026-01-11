@@ -107,7 +107,7 @@ export default function ReorderModal({
 
                     <div className="flex justify-between items-center py-4 border-t border-b border-slate-100 mb-6">
                         <span className="text-slate-500 text-sm">Unit Price</span>
-                        <span className="font-bold text-slate-900">£{currentVendorPrice.toFixed(2)}</span>
+                        <span className="font-bold text-slate-900">₾{currentVendorPrice.toFixed(2)}</span>
                     </div>
 
                     <div className="bg-cyan-50/50 p-4 rounded-xl mb-6">
@@ -117,7 +117,7 @@ export default function ReorderModal({
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-sm text-slate-600 font-bold">Total Cost</span>
-                            <span className="font-bold text-slate-900">£{totalCost}</span>
+                            <span className="font-bold text-slate-900">₾{totalCost}</span>
                         </div>
                     </div>
 
@@ -134,7 +134,7 @@ export default function ReorderModal({
                                         }`}
                                 >
                                     <span className="font-bold text-slate-900 text-sm">{vendor.name}</span>
-                                    <span className="text-brand font-bold text-sm">£{vendor.price.toFixed(2)}/unit</span>
+                                    <span className="text-brand font-bold text-sm">₾{vendor.price.toFixed(2)}/unit</span>
                                 </div>
                             ))}
                         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { DollarSign, Zap, Truck, CheckCircle } from 'lucide-react';
+import { DollarSign, TrendingUp } from 'lucide-react';
 
 interface MetricCardProps {
     label: string;
@@ -33,15 +33,13 @@ function MetricCard({ label, value, subtext, trend, icon: Icon, iconColor, iconB
 interface KPIGridProps {
     metrics: {
         totalSpend: string;
-        costEfficiency: string;
-        deliverySpeed: string;
-        supplierReliability: string;
+        monthlySpend: string;
     };
 }
 
 export default function KPIGrid({ metrics }: KPIGridProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <MetricCard
                 label="Total Spend (This Quarter)"
                 value={metrics.totalSpend}
@@ -52,28 +50,13 @@ export default function KPIGrid({ metrics }: KPIGridProps) {
                 iconBg="bg-cyan-50"
             />
             <MetricCard
-                label="Cost Efficiency"
-                value={metrics.costEfficiency}
-                subtext="above market avg"
-                icon={Zap} // Dollar sign in cycle usually
-                iconColor="text-yellow-500"
-                iconBg="bg-yellow-50"
-            />
-            <MetricCard
-                label="Delivery Speed"
-                value={metrics.deliverySpeed}
-                subtext="Faster than avg"
-                icon={Truck}
-                iconColor="text-blue-500"
-                iconBg="bg-blue-50"
-            />
-            <MetricCard
-                label="Supplier Reliability"
-                value={metrics.supplierReliability}
-                subtext="SLA compliance"
-                icon={CheckCircle}
-                iconColor="text-green-500"
-                iconBg="bg-green-50"
+                label="Total Spend by Month"
+                value={metrics.monthlySpend}
+                subtext="Average monthly spend"
+                trend="+2.3%"
+                icon={TrendingUp}
+                iconColor="text-purple-500"
+                iconBg="bg-purple-50"
             />
         </div>
     );

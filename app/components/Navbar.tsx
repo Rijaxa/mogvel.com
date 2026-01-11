@@ -27,7 +27,7 @@ export default function Navbar() {
                     href={isCompanyLoggedIn ? "/dashboard/company" : "/company/login"}
                     className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
                 >
-                    {isCompanyLoggedIn ? "Company Dashboard" : "Company Login"}
+                    Company Login
                 </Link>
                 <Link href="/dashboard/vendor" className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
                     Vendor Login

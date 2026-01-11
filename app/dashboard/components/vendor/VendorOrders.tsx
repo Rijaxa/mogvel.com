@@ -5,10 +5,10 @@ import { cn } from '@/lib/utils';
 
 export default function VendorOrders() {
     const orders = [
-        { id: 'ORD-2847', client: 'Acme Corp', items: 5, date: '25.3.2025', amount: '£2,340', status: 'Pending', color: 'border-l-orange-400' },
-        { id: 'ORD-2846', client: 'TechStart Inc', items: 3, date: '23.3.2025', amount: '£1,850', status: 'Approved', color: 'border-l-brand' },
-        { id: 'ORD-2845', client: 'Global Industries', items: 8, date: '22.3.2025', amount: '£3,120', status: 'Shipped', color: 'border-l-green-500' },
-        { id: 'ORD-2844', client: 'Urban Retail Co', items: 4, date: '20.3.2025', amount: '£1,280', status: 'Pending', color: 'border-l-orange-400' }, // Screenshot shows red line but pending? Using orange for pending consistency, or red if critical.
+        { id: 'ORD-2847', client: 'Acme Corp', items: 5, date: '25.3.2025', amount: '₾2,340', status: 'Pending', color: 'border-l-orange-400' },
+        { id: 'ORD-2846', client: 'TechStart Inc', items: 3, date: '23.3.2025', amount: '₾1,850', status: 'Approved', color: 'border-l-brand' },
+        { id: 'ORD-2845', client: 'Global Industries', items: 8, date: '22.3.2025', amount: '₾3,120', status: 'Shipped', color: 'border-l-green-500' },
+        { id: 'ORD-2844', client: 'Urban Retail Co', items: 4, date: '20.3.2025', amount: '₾1,280', status: 'Pending', color: 'border-l-orange-400' }, // Screenshot shows red line but pending? Using orange for pending consistency, or red if critical.
         // Screenshot actually shows: 2847 (Orange/Pending), 2846 (Teal/Approved), 2845 (Green/Shipped), 2844 (Red/Pending - maybe late?)
         // I'll follow screenshot colors:
     ];
@@ -68,7 +68,7 @@ export default function VendorOrders() {
                         <p className="text-[10px] text-slate-400 mt-0.5">Expected: 25.3.2025</p>
                     </div>
                     <div className="text-right flex items-center gap-4">
-                        <span className="font-bold text-slate-900">£2,340</span>
+                        <span className="font-bold text-slate-900">₾2,340</span>
                         <div className="flex gap-2 text-slate-400">
                             <CheckCircle className="w-4 h-4 cursor-pointer hover:text-brand" />
                             <Package className="w-4 h-4 cursor-pointer hover:text-brand" />
@@ -86,7 +86,7 @@ export default function VendorOrders() {
                         <p className="text-[10px] text-slate-400 mt-0.5">Expected: 23.3.2025</p>
                     </div>
                     <div className="text-right flex items-center gap-4">
-                        <span className="font-bold text-slate-900">£1,850</span>
+                        <span className="font-bold text-slate-900">₾1,850</span>
                         <div className="flex gap-2 text-slate-400">
                             <CheckCircle className="w-4 h-4 cursor-pointer hover:text-brand" />
                             <Package className="w-4 h-4 cursor-pointer hover:text-brand" />
@@ -104,7 +104,7 @@ export default function VendorOrders() {
                         <p className="text-[10px] text-slate-400 mt-0.5">Expected: 22.3.2025</p>
                     </div>
                     <div className="text-right flex items-center gap-4">
-                        <span className="font-bold text-slate-900">£3,120</span>
+                        <span className="font-bold text-slate-900">₾3,120</span>
                         <div className="flex gap-2 text-slate-400">
                             <CheckCircle className="w-4 h-4 cursor-pointer hover:text-brand" />
                             <Package className="w-4 h-4 cursor-pointer hover:text-brand" />
@@ -122,7 +122,7 @@ export default function VendorOrders() {
                         <p className="text-[10px] text-slate-400 mt-0.5">Expected: 28.3.2025</p>
                     </div>
                     <div className="text-right flex items-center gap-4">
-                        <span className="font-bold text-slate-900">£1,280</span>
+                        <span className="font-bold text-slate-900">₾1,280</span>
                         <div className="flex gap-2 text-slate-400">
                             <CheckCircle className="w-4 h-4 cursor-pointer hover:text-brand" />
                             <Package className="w-4 h-4 cursor-pointer hover:text-brand" />

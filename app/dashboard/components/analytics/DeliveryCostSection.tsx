@@ -68,7 +68,7 @@ export default function DeliveryCostSection() {
 
                 <div className="text-center">
                     <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Potential Savings</p>
-                    <p className="text-3xl font-bold text-brand">€12,400</p>
+                    <p className="text-3xl font-bold text-brand">₾12,400</p>
                 </div>
             </div>
         </div>

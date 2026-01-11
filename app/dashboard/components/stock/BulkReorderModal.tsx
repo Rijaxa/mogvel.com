@@ -46,7 +46,7 @@ export default function BulkReorderModal({ isOpen, onClose }: BulkReorderModalPr
                                     <p className="text-xs text-slate-500">Current: {item.current} units</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="font-bold text-slate-900">£{item.cost.toFixed(2)}</p>
+                                    <p className="font-bold text-slate-900">₾{item.cost.toFixed(2)}</p>
                                     <p className="text-xs text-slate-500">{item.units} units</p>
                                 </div>
                             </div>

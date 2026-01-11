@@ -89,7 +89,11 @@ export default function VendorOrderRow({
             </div>
 
             {isExpanded && (
-                <VendorOrderDetails status={status} onClose={() => setIsExpanded(false)} />
+                <VendorOrderDetails
+                    status={status}
+                    displayStatus={getBadgeLabel()}
+                    onClose={() => setIsExpanded(false)}
+                />
             )}
         </div>
     );

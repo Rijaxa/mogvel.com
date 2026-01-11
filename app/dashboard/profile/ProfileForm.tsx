@@ -284,6 +284,43 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
                         <label className="text-sm font-medium text-slate-700">Service Areas (cities/regions)</label>
                         <input name="serviceAreas" type="text" placeholder="e.g. Tbilisi, Batumi" defaultValue={details.serviceAreas || ''} className="input-field" />
                     </div>
+
+                    {/* Banking Information */}
+                    <div className="md:col-span-2 pt-4 border-t border-slate-100">
+                        <p className="text-sm text-slate-600 mb-4 flex items-start gap-2">
+                            <span className="text-brand">ℹ️</span>
+                            <span>Banking details are required for automated invoice generation and payment processing</span>
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">IBAN <span className="text-red-500">*</span></label>
+                        <input
+                            name="iban"
+                            type="text"
+                            placeholder="GE00TB0000000000000000"
+                            defaultValue={details.iban || ''}
+                            required
+                            className="input-field font-mono"
+                            pattern="[A-Z]{2}[0-9]{2}[A-Z0-9]+"
+                            title="Please enter a valid IBAN (e.g., GE00TB0000000000000000)"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700">SWIFT/BIC Code <span className="text-red-500">*</span></label>
+                        <input
+                            name="swift"
+                            type="text"
+                            placeholder="TBCBGE22"
+                            defaultValue={details.swift || ''}
+                            required
+                            className="input-field font-mono uppercase"
+                            pattern="[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?"
+                            title="Please enter a valid SWIFT/BIC code (8 or 11 characters)"
+                            maxLength={11}
+                        />
+                    </div>
                 </div>
             </div>
 

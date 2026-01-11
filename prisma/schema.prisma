@@ -1,0 +1,322 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// =======================
+// User & Auth
+// =======================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String?
+  name          String?
+  role          String    @default("user") // 'user', 'admin'
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Profile / Company Details (Json for flexibility as requested)
+  // SQLite doesn't support Json directly in Prisma < 5, but usually ok in 5+ as string. 
+  // For SQLite, it's safer to map to String if strictly portable, but Prisma handles JSON on SQLite via text.
+  companyDetails String?  // Stored as JSON string
+
+  // Relations
+  membership    OrganizationMember[]
+  createdOrders Order[]
+
+  @@map(name: "users")
+}
+
+// =======================
+// Organizations
+// =======================
+
+// SQLite doesn't support ENUMs. We use String with validation in app logic.
+
+model Organization {
+  id                 String    @id @default(uuid())
+  type               String    // company, vendor
+  name               String
+  legalName          String?
+  taxId              String?
+  country            String?
+  city               String?
+  address            String?
+  status             String    @default("active") // active, suspended, pending_verification
+  isListed           Boolean   @default(true)
+  verificationStatus String    @default("pending") // pending, verified, rejected
+  supportPhone       String?
+  
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  members            OrganizationMember[]
+  roles              Role[]
+  locations          Location[]
+  
+  // Vendor Relations
+  products           Product[]
+  vendorLinksAsVendor CompanyVendorLink[] @relation("VendorLinks")
+  contractsAsVendor  Contract[]          @relation("VendorContracts")
+  ordersAsVendor     Order[]             @relation("VendorOrders")
+  rfqResponses       RFQResponse[]
+
+  // Company Relations
+  pricingAsCompany   ProductPricing[]
+  vendorLinksAsCompany CompanyVendorLink[] @relation("CompanyLinks")
+  contractsAsCompany Contract[]          @relation("CompanyContracts")
+  ordersAsCompany    Order[]             @relation("CompanyOrders")
+  rfqs               RFQ[]
+
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String
+  roleId         String
+  status         String       @default("invited") // invited, active, disabled
+  invitedEmail   String?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
+
+model Role {
+  id             String       @id @default(uuid())
+  organizationId String
+  scope          String       // company, vendor
+  name           String
+  description    String?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        OrganizationMember[]
+  permissions    RolePermission[]
+
+  @@unique([organizationId, name])
+  @@map("roles")
+}
+
+model RolePermission {
+  id       String  @id @default(uuid())
+  roleId   String
+  resource String
+  action   String
+  allowed  Boolean @default(true)
+
+  role     Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, resource, action])
+  @@map("role_permissions")
+}
+
+model Location {
+  id             String       @id @default(uuid())
+  organizationId String
+  name           String
+  type           String?      // hq, warehouse, office, branch
+  address        String?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  stock          ProductStock[]
+  receivedOrders Order[]
+
+  @@map("locations")
+}
+
+// =======================
+// Inventory
+// =======================
+
+model Product {
+  id               String   @id @default(uuid())
+  vendorId         String
+  sku              String?
+  name             String
+  description      String?
+  category         String?
+  subCategory      String?
+  unitOfMeasure    String?
+  minOrderQuantity Int      @default(1)
+  leadTimeDays     Int      @default(0)
+  status           String   @default("active") // active, inactive
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  vendor           Organization @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  pricing          ProductPricing[]
+  stock            ProductStock[]
+
+  @@map("products")
+}
+
+model ProductPricing {
+  id              String   @id @default(uuid())
+  productId       String
+  currency        String   @default("GEL")
+  basePrice       Decimal  // SQLite supports Decimal
+  priceMin        Decimal?
+  priceMax        Decimal?
+  volumeThreshold Int?
+  companyId       String?  // Specific price for a specific buyer company
+  
+  validFrom       DateTime @default(now())
+  validTo         DateTime?
+
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  company         Organization? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([productId, companyId])
+  @@map("product_pricing")
+}
+
+model ProductStock {
+  id            String   @id @default(uuid())
+  productId     String
+  locationId    String
+  currentStock  Decimal  @default(0)
+  reservedStock Decimal  @default(0)
+  stockStatus   String   @default("medium") // high, medium, low, critical
+  reorderPoint  Decimal?
+  updatedAt     DateTime @updatedAt
+
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  location      Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locationId])
+  @@map("product_stock")
+}
+
+// =======================
+// Commerce
+// =======================
+
+model CompanyVendorLink {
+  id                 String   @id @default(uuid())
+  companyId          String
+  vendorId           String
+  status             String   @default("invited") // active, invited, blocked
+  contractId         String?
+  rating             Decimal?
+  priceStability     String?
+  deliverySlaPercent Decimal?
+  createdAt          DateTime @default(now())
+
+  company            Organization @relation("CompanyLinks", fields: [companyId], references: [id], onDelete: Cascade)
+  vendor             Organization @relation("VendorLinks", fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, vendorId])
+  @@map("company_vendor_links")
+}
+
+model Contract {
+  id          String    @id @default(uuid())
+  title       String?
+  vendorId    String?
+  companyId   String?
+  validFrom   DateTime?
+  validTo     DateTime?
+  fileUrl     String?
+  status      String?   @default("active")
+  createdAt   DateTime  @default(now())
+
+  vendor      Organization? @relation("VendorContracts", fields: [vendorId], references: [id])
+  company     Organization? @relation("CompanyContracts", fields: [companyId], references: [id])
+
+  @@map("contracts")
+}
+
+model Order {
+  id                String    @id @default(uuid())
+  orderNumber       String    @unique
+  companyId         String
+  vendorId          String
+  locationId        String?
+  status            String    @default("pending") // pending, approved, shipped, delivered, cancelled
+  urgency           String    @default("medium") // low, medium, urgent
+  currency          String    @default("GEL")
+  subtotal          Decimal   @default(0)
+  discountTotal     Decimal   @default(0)
+  taxTotal          Decimal   @default(0)
+  grandTotal        Decimal   @default(0)
+  
+  placedAt          DateTime  @default(now())
+  expectedDeliveryAt DateTime?
+  deliveredAt       DateTime?
+  createdBy         String?
+  updatedAt         DateTime  @updatedAt
+
+  company           Organization @relation("CompanyOrders", fields: [companyId], references: [id], onDelete: Restrict)
+  vendor            Organization @relation("VendorOrders", fields: [vendorId], references: [id], onDelete: Restrict)
+  location          Location?    @relation(fields: [locationId], references: [id])
+  creator           User?        @relation(fields: [createdBy], references: [id])
+
+  @@map("orders")
+}
+
+// =======================
+// RFQ
+// =======================
+
+model RFQ {
+  id        String   @id @default(uuid())
+  companyId String
+  title     String
+  status    String   @default("draft") // draft, open, closed, awarded
+  deadline  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company   Organization @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  items     RFQItem[]
+  responses RFQResponse[]
+
+  @@map("rfqs")
+}
+
+model RFQItem {
+  id          String  @id @default(uuid())
+  rfqId       String
+  productName String
+  quantity    Decimal?
+  targetPrice Decimal?
+
+  rfq         RFQ     @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+
+  @@map("rfq_items")
+}
+
+model RFQResponse {
+  id          String   @id @default(uuid())
+  rfqId       String
+  vendorId    String
+  priceQuote  Decimal?
+  comments    String?
+  respondedAt DateTime @default(now())
+
+  rfq         RFQ          @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  vendor      Organization @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([rfqId, vendorId])
+  @@map("rfq_responses")
+}

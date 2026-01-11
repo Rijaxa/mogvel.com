@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, RefreshCw, FileText, X } from 'lucide-react';
+import { ChevronDown, RefreshCw, FileText, X, User } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -37,6 +37,7 @@ export default function OrderCard({
     if (status === "Payment Verified") statusColor = "bg-blue-50 text-blue-500";
     if (status === "Completed" || status === "Delivered") statusColor = "bg-green-50 text-green-600";
     if (status === "Awaiting Response" || status === "Vendor Response" || status === "Order Placed") statusColor = "bg-yellow-50 text-yellow-600";
+    if (status === "Vendor Rejected") statusColor = "bg-red-50 text-red-600";
 
     const handleCancel = () => {
         if (confirm("Are you sure you want to cancel this order?")) {
@@ -92,6 +93,7 @@ export default function OrderCard({
                     <OrderProgress
                         status={status}
                         role="buyer"
+                        vendorName={vendor}
                         paymentProofUrl={paymentProofUrl}
                         onCancelOrder={handleCancel}
                         onViewInvoice={handleViewInvoice}
@@ -113,6 +115,13 @@ export default function OrderCard({
                         >
                             <FileText className="w-4 h-4" />
                             Download Invoice
+                        </button>
+                        <button
+                            onClick={() => alert(`Contact Person: John Doe\nRole: Warehouse Manager\nEmail: john@officemax.com\nPhone: +44 20 7123 4567`)}
+                            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 transition-colors"
+                        >
+                            <User className="w-4 h-4" />
+                            Contact Person
                         </button>
                         <button
                             onClick={() => setIsExpanded(false)}

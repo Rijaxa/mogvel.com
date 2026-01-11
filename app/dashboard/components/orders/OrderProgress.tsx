@@ -1,4 +1,4 @@
-import { Check, ThumbsUp, ThumbsDown, Banknote, Clock, CreditCard, CheckCircle2, Truck, XCircle, ShoppingCart, Activity, FileText, Upload, Eye } from 'lucide-react';
+import { Check, ThumbsUp, ThumbsDown, Banknote, Clock, CreditCard, CheckCircle2, Truck, XCircle, ShoppingCart, Activity, FileText, Upload, Eye, FileDown, FileUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface OrderProgressProps {
@@ -10,17 +10,48 @@ interface OrderProgressProps {
     onCancelOrder?: () => void;
     onAcceptOrder?: () => void;
     onRejectOrder?: () => void;
+    vendorName?: string;
 }
 
-const getSteps = (role: 'buyer' | 'vendor') => [
-    { id: 'submitted', label: role === 'buyer' ? 'Order Submitted' : 'Order Received', icon: Check },
-    { id: 'response', label: 'Vendor Response', icon: ThumbsUp },
-    { id: 'invoice', label: 'Invoice Generated', icon: Banknote },
-    { id: 'payment', label: 'Payment Progress', icon: Clock },
-    { id: 'verified', label: 'Payment Verified', icon: CreditCard },
-    { id: 'delivered', label: 'In Delivery', icon: Truck },
-    { id: 'completed', label: 'Completed', icon: CheckCircle2 }
-];
+const getSteps = (role: 'buyer' | 'vendor', status: string, vendorName?: string) => {
+    const isAccepted = status === 'Vendor Accepted' || status === 'Invoice Generated' || status === 'Payment Sent' || status === 'Proof Uploaded' || status === 'Payment Verified' || status === 'Dispatched' || status === 'Delivered' || status === 'Completed';
+    const isRejected = status === 'Vendor Rejected';
+
+    let responseLabel = role === 'buyer' ? 'Vendor Response' : 'Accept / Reject';
+    let responseTooltip = role === 'buyer' ? 'Waiting for vendor acceptance' : 'Vendor action required';
+
+    // Icon logic: Buyer sees Activity, Vendor sees ThumbsUp (unless rejected)
+    const responseIcon = isRejected ? ThumbsDown : (role === 'buyer' ? Activity : ThumbsUp);
+
+    if (isAccepted) {
+        responseLabel = 'Order Accepted';
+        responseTooltip = role === 'buyer'
+            ? `Vendor ${vendorName ? `(${vendorName})` : ''} has accepted your order`
+            : 'You have accepted this order';
+    } else if (isRejected) {
+        responseLabel = 'Order Rejected';
+        responseTooltip = role === 'buyer'
+            ? 'Vendor has declined the order'
+            : 'You have rejected this order';
+    }
+
+    return [
+        { id: 'submitted', label: role === 'buyer' ? 'Order Submitted' : 'Order Received', icon: Check, tooltip: 'Initial order placement' },
+        { id: 'response', label: responseLabel, icon: responseIcon, tooltip: responseTooltip },
+        { id: 'invoice', label: 'Invoice Generated', icon: Banknote, tooltip: 'Vendor uploads invoice' },
+        {
+            id: 'payment',
+            label: role === 'buyer' ? 'Proof Upload' : 'Payment Proof',
+            icon: role === 'buyer' ? FileUp : FileText,
+            tooltip: role === 'buyer'
+                ? { title: 'Payment Sent', body: 'Company marks payment as done' }
+                : { title: 'Awaiting Payment', body: 'Waiting for client payment' }
+        },
+        { id: 'verified', label: 'Payment Verified', icon: CreditCard, tooltip: 'Payment confirmed by vendor' },
+        { id: 'delivered', label: 'Order Shipped', icon: Truck, tooltip: 'Items are on their way' },
+        { id: 'completed', label: 'Delivered', icon: CheckCircle2, tooltip: 'Order successfully received' }
+    ];
+};
 
 export default function OrderProgress({
     status,
@@ -30,19 +61,20 @@ export default function OrderProgress({
     onUploadProof,
     onCancelOrder,
     onAcceptOrder,
-    onRejectOrder
+    onRejectOrder,
+    vendorName
 }: OrderProgressProps) {
-    const steps = getSteps(role);
+    const steps = getSteps(role, status, vendorName);
 
     // Determine current step index based on status string (7 steps)
     let currentStepIndex = 0;
-    if (status === 'Order Placed' || status === 'Order Submitted' || status === 'Order Received') currentStepIndex = 0;
-    else if (status === 'Awaiting Response' || status === 'Vendor Response') currentStepIndex = 1;
-    else if (status === 'Vendor Accepted' || status === 'Invoice Generated') currentStepIndex = 2;
-    else if (status === 'Payment Sent') currentStepIndex = 3;
-    else if (status === 'Proof Uploaded') currentStepIndex = 4;
-    else if (status === 'Payment Verified' || status === 'Dispatched') currentStepIndex = 5;
-    else if (status === 'Delivered' || status === 'Completed') currentStepIndex = 6;
+    if (status === 'Order Placed' || status === 'Order Submitted' || status === 'Order Received' || status === 'Incoming') currentStepIndex = 0;
+    else if (status === 'Awaiting Response' || status === 'Vendor Response' || status === 'Vendor Rejected') currentStepIndex = 1;
+    else if (status === 'Vendor Accepted' || status === 'Invoice Generated') currentStepIndex = 3; // Step 2 (Invoice) is done
+    else if (status === 'Payment Sent' || status === 'Awaiting Payment' || status === 'In Progress' || status === 'Proof Uploaded') currentStepIndex = 4; // Step 3 (Proof) is done
+    else if (status === 'Payment Verified') currentStepIndex = 5; // Step 4 (Verified) is done
+    else if (status === 'Dispatched' || status === 'Shipped') currentStepIndex = 6; // Step 5 (Shipped) is done
+    else if (status === 'Delivered' || status === 'Completed') currentStepIndex = 7; // All done
 
     // Helper to check step state
     const getStepState = (index: number) => {
@@ -59,29 +91,18 @@ export default function OrderProgress({
             </div>
 
             <div className="relative mb-8 px-4">
-                {/* 
-                    Progress Bar Background 
-                    - Top: 19px (20px center - 1px half-height)
-                    - Left/Right: 50% of one flex item's width (1 part of 6) approx? 
-                    - Actually, relying on exact centers with flex is tricky.
-                    - Better approach: Using absolute padding based on container size.
-                    - With flex-1, the center of the first item depends on the container width.
-                    - Let's assume standard spacing.
-                */}
-                <div className="absolute left-0 right-0 top-[19px] h-0.5 w-full -z-0">
-                    <div className="h-full bg-slate-100 w-[calc(100%-4rem)] mx-auto" />
+                {/* Progress Bar Background - constrained between first and last step centers */}
+                <div className="absolute left-0 right-0 top-[19px] h-0.5 -z-0 flex items-center px-4">
+                    <div className="h-full bg-slate-100 flex-1" style={{ marginLeft: '20px', marginRight: '20px' }} />
                 </div>
 
-                {/* 
-                    Active Progress Fill 
-                    We'll float this over the background.
-                    Math: (index / max) * width.
-                */}
-                <div className="absolute left-8 right-8 top-[19px] h-0.5 -z-0 pointer-events-none">
+                {/* Active Progress Fill - same constraints as background */}
+                <div className="absolute left-0 right-0 top-[19px] h-0.5 -z-0 pointer-events-none flex items-center px-4">
                     <div
                         className="h-full bg-brand transition-all duration-500 ease-out"
                         style={{
-                            width: `${(currentStepIndex / (steps.length - 1)) * 100}%`
+                            width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - ${20 - (currentStepIndex / (steps.length - 1)) * 20}px)`,
+                            marginLeft: '20px'
                         }}
                     />
                 </div>
@@ -98,7 +119,7 @@ export default function OrderProgress({
                                 <div className={cn(
                                     "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-20 mb-3 bg-white",
                                     isCompleted ? "bg-brand border-brand text-white shadow-none" :
-                                        isActive ? "bg-white border-brand text-brand shadow-[0_0_0_4px_rgba(45,212,191,0.1)] scale-110" :
+                                        isActive ? (status === 'Vendor Rejected' ? "bg-white border-red-500 text-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)] scale-110" : "bg-white border-brand text-brand shadow-[0_0_0_4px_rgba(45,212,191,0.1)] scale-110") :
                                             "bg-white border-slate-200 text-slate-300 shadow-none"
                                 )}>
                                     {isCompleted ? <Check className="w-5 h-5" /> :
@@ -110,11 +131,24 @@ export default function OrderProgress({
                                 <div className="text-center w-full px-1">
                                     <span className={cn(
                                         "text-xs font-medium block leading-tight truncate w-full",
-                                        isActive ? "text-brand font-bold" :
+                                        isActive ? (status === 'Vendor Rejected' ? "text-red-500 font-bold" : "text-brand font-bold") :
                                             isCompleted ? "text-slate-900" : "text-slate-400"
-                                    )} title={step.label}>
+                                    )} title={typeof step.tooltip === 'string' ? step.tooltip : step.tooltip.title}>
                                         {step.label}
                                     </span>
+                                </div>
+
+                                {/* Hover Tooltip for Dots */}
+                                <div className="absolute -top-12 scale-0 group-hover:scale-100 transition-all bg-slate-900 text-white text-[10px] px-2 py-1.5 rounded z-50 pointer-events-none shadow-xl border border-slate-800">
+                                    {typeof step.tooltip === 'string' ? (
+                                        <p className="font-bold text-white whitespace-nowrap">{step.tooltip}</p>
+                                    ) : (
+                                        <div className="min-w-[120px] space-y-0.5">
+                                            <p className="font-bold text-white border-b border-slate-700 pb-0.5 mb-1">{step.tooltip.title}</p>
+                                            <p className="text-slate-400 leading-tight">{step.tooltip.body}</p>
+                                        </div>
+                                    )}
+                                    <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-slate-900" />
                                 </div>
                             </div>
                         );
@@ -135,6 +169,41 @@ export default function OrderProgress({
                                 <XCircle className="w-4 h-4" />
                                 <span>Cancel Order</span>
                             </button>
+                        )}
+
+                        {/* Status specific actions for buyer */}
+                        {status === 'Invoice Generated' && (
+                            <div className="flex items-center gap-3 mr-auto">
+                                <button
+                                    onClick={onViewInvoice}
+                                    className="flex items-center gap-2 px-4 py-2 border border-brand text-brand rounded-lg text-sm font-bold hover:bg-cyan-50 transition-colors"
+                                >
+                                    <FileDown className="w-4 h-4" />
+                                    View Invoice
+                                </button>
+                                <button
+                                    onClick={() => alert("Uploading Payment Proof...")}
+                                    className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand/90 transition-colors shadow-sm"
+                                >
+                                    <FileUp className="w-4 h-4" />
+                                    Upload Payment Proof
+                                </button>
+                            </div>
+                        )}
+
+                        {(status === 'Shipped' || status === 'Dispatched') && (
+                            <div className="flex items-center gap-3 mr-auto">
+                                <button
+                                    onClick={() => {
+                                        alert("Marking as Delivered... \nNotification sent to Vendor!");
+                                        console.log("Email sent to Vendor: Order Delivered");
+                                    }}
+                                    className="flex items-center gap-2 px-6 py-2 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand/90 transition-all shadow-md shadow-brand/20"
+                                >
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    Mark as Delivered
+                                </button>
+                            </div>
                         )}
                     </>
                 ) : (
@@ -158,13 +227,70 @@ export default function OrderProgress({
                                 </button>
                             </>
                         )}
+
+                        {/* Status specific actions for vendor */}
+                        {(status === 'Invoice Generated' || status === 'Awaiting Payment') && (
+                            <div className="flex items-center gap-3 mr-auto">
+                                <button
+                                    onClick={onViewInvoice}
+                                    className="flex items-center gap-2 px-4 py-2 bg-cyan-50 border border-cyan-200 text-brand rounded-lg text-sm font-bold hover:bg-cyan-100 transition-colors"
+                                >
+                                    <FileDown className="w-4 h-4" />
+                                    invoice-VO-2024-009.pdf
+                                </button>
+                            </div>
+                        )}
+
+                        {status === 'Proof Uploaded' && (
+                            <div className="flex items-center gap-3 mr-auto">
+                                <button
+                                    onClick={onViewInvoice}
+                                    className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-100 transition-colors"
+                                >
+                                    <FileDown className="w-4 h-4" />
+                                    invoice-VO-2024-009.pdf
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        alert("Confirming Payment... \nNotification sent to Buyer!");
+                                        console.log("Email sent to Buyer: Payment Confirmed");
+                                    }}
+                                    className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand/90 transition-all shadow-md shadow-brand/20"
+                                >
+                                    <Check className="w-4 h-4" />
+                                    Confirm Payment
+                                </button>
+                            </div>
+                        )}
+
+                        {status === 'Payment Verified' && (
+                            <div className="flex items-center gap-3 mr-auto">
+                                <button
+                                    onClick={onViewInvoice}
+                                    className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 text-slate-600 rounded-lg text-sm font-bold hover:bg-slate-100 transition-colors"
+                                >
+                                    <FileDown className="w-4 h-4" />
+                                    invoice-VO-2024-009.pdf
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        alert("Marking as Shipped... \nNotification sent to Buyer!");
+                                        console.log("Email sent to Buyer: Order Shipped");
+                                    }}
+                                    className="flex items-center gap-2 px-6 py-2 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand/90 transition-all shadow-md shadow-brand/20"
+                                >
+                                    <Truck className="w-4 h-4" />
+                                    Mark as Shipped
+                                </button>
+                            </div>
+                        )}
                     </>
                 )}
 
                 {/* Common actions */}
                 <div className="flex-1" />
 
-                {(currentStepIndex >= 2 || status === 'Invoice Generated') && (
+                {(currentStepIndex >= 3) && (
                     <button
                         onClick={onViewInvoice}
                         className="flex items-center gap-2 px-4 py-2 border border-brand text-brand rounded-lg text-sm font-bold hover:bg-cyan-50 transition-colors"
@@ -174,7 +300,7 @@ export default function OrderProgress({
                     </button>
                 )}
 
-                {(role === 'buyer' && currentStepIndex >= 2 && currentStepIndex < 5 && status !== 'Payment Verified' && status !== 'Proof Uploaded') && (
+                {(role === 'buyer' && currentStepIndex >= 2 && currentStepIndex < 5 && status !== 'Payment Verified' && status !== 'Proof Uploaded' && status !== 'Invoice Generated') && (
                     <button
                         onClick={onUploadProof}
                         className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand/90 transition-colors shadow-sm"

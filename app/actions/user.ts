@@ -53,27 +53,44 @@ export async function updateUserProfile(formData: FormData) {
     }
 
     // Prepare update object (only update logo if one was uploaded)
-    const existingUser = db.getUserByEmail(session.user.email);
-    const existingLogo = existingUser?.companyDetails?.logoUrl;
+    // Prepare update object (only update logo if one was uploaded)
+    const existingUser = await db.user.findUnique({ where: { email: session.user.email } });
 
-    const updatedUser = db.updateUser(session.user.email, {
-        companyDetails: {
-            organisationName,
-            legalName,
-            registrationNumber,
-            country,
-            city,
-            address,
-            currency,
-            contactPerson,
-            phone,
-            contactEmail,
-            numberOfOffices,
-            vatPayerStatus,
-            businessScale: businessScale || undefined, // Handle empty string/null
-            serviceAreas,
-            logoUrl: logoUrl || existingLogo,
-            isProfileComplete: !!(organisationName && legalName && registrationNumber && city && address && contactPerson && phone && contactEmail)
+    let existingLogo = undefined;
+    if (existingUser?.companyDetails) {
+        try {
+            const details = typeof existingUser.companyDetails === 'string'
+                ? JSON.parse(existingUser.companyDetails)
+                : existingUser.companyDetails;
+            existingLogo = details.logoUrl;
+        } catch (e) {
+            console.error("Error parsing company details", e);
+        }
+    }
+
+    const newCompanyDetails = {
+        organisationName,
+        legalName,
+        registrationNumber,
+        country,
+        city,
+        address,
+        currency,
+        contactPerson,
+        phone,
+        contactEmail,
+        numberOfOffices,
+        vatPayerStatus,
+        businessScale: businessScale || undefined, // Handle empty string/null
+        serviceAreas,
+        logoUrl: logoUrl || existingLogo,
+        isProfileComplete: !!(organisationName && legalName && registrationNumber && city && address && contactPerson && phone && contactEmail)
+    };
+
+    const updatedUser = await db.user.update({
+        where: { email: session.user.email },
+        data: {
+            companyDetails: JSON.stringify(newCompanyDetails)
         }
     });
 

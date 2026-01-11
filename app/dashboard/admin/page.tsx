@@ -11,7 +11,13 @@ export default async function AdminPage() {
         redirect('/dashboard/company');
     }
 
-    const users = db.getAllUsers();
+    const rawUsers = await db.user.findMany();
+    const users = rawUsers.map(user => ({
+        ...user,
+        companyDetails: user.companyDetails && typeof user.companyDetails === 'string'
+            ? JSON.parse(user.companyDetails)
+            : user.companyDetails || {}
+    }));
 
     return (
         <div className="space-y-8">
@@ -96,8 +102,8 @@ export default async function AdminPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${user.role === 'admin'
-                                                ? 'bg-purple-50 text-purple-700 border-purple-100'
-                                                : 'bg-slate-50 text-slate-600 border-slate-100'
+                                            ? 'bg-purple-50 text-purple-700 border-purple-100'
+                                            : 'bg-slate-50 text-slate-600 border-slate-100'
                                             }`}>
                                             {user.role}
                                         </span>

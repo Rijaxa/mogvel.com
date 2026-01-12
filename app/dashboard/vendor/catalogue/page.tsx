@@ -1,7 +1,7 @@
 'use client';
 
-import CatalogueHeader from '../../components/vendor/catalogue/CatalogueHeader';
-import VendorProductCard from '../../components/vendor/catalogue/VendorProductCard';
+import CatalogueHeader from '@/app/dashboard/components/vendor/catalogue/CatalogueHeader';
+import VendorProductCard from '@/app/dashboard/components/vendor/catalogue/VendorProductCard';
 import { MessageCircle } from 'lucide-react';
 
 export default function VendorCataloguePage() {

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import AnalyticsHeader from '../../components/vendor/analytics/AnalyticsHeader';
-import AnalyticsKPIs from '../../components/vendor/analytics/AnalyticsKPIs';
-import SalesCharts from '../../components/vendor/analytics/SalesCharts';
-import AnalyticsSections from '../../components/vendor/analytics/AnalyticsSections';
-import AnalyticsModals from '../../components/vendor/analytics/AnalyticsModals';
+import AnalyticsHeader from '@/app/dashboard/components/vendor/analytics/AnalyticsHeader';
+import AnalyticsKPIs from '@/app/dashboard/components/vendor/analytics/AnalyticsKPIs';
+import SalesCharts from '@/app/dashboard/components/vendor/analytics/SalesCharts';
+import AnalyticsSections from '@/app/dashboard/components/vendor/analytics/AnalyticsSections';
+import AnalyticsModals from '@/app/dashboard/components/vendor/analytics/AnalyticsModals';
 import { MessageCircle } from 'lucide-react';
 
 export default function VendorAnalyticsPage() {

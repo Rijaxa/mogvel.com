@@ -1,10 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { Download, SlidersHorizontal } from 'lucide-react';
 import { exportToCSV } from '@/lib/export';
-import { rawOrders } from '../../lib/mockAnalyticsData';
+import { rawOrders } from '@/app/dashboard/lib/mockAnalyticsData';
+import PerformanceComparisonModal from './PerformanceComparisonModal';
 
 export default function AnalyticsHeader() {
+    const [isComparisonModalOpen, setIsComparisonModalOpen] = useState(false);
+
     const handleExport = () => {
         exportToCSV(rawOrders, 'vendor_analytics_report');
     };
@@ -24,11 +28,19 @@ export default function AnalyticsHeader() {
                     <Download className="w-4 h-4" />
                     Export CSV
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-xl font-bold text-sm hover:bg-brand/90 transition-colors shadow-sm shadow-brand/20">
+                <button
+                    onClick={() => setIsComparisonModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-xl font-bold text-sm hover:bg-brand/90 transition-colors shadow-sm shadow-brand/20"
+                >
                     <SlidersHorizontal className="w-4 h-4" />
                     Compare Performance
                 </button>
             </div>
+
+            <PerformanceComparisonModal
+                isOpen={isComparisonModalOpen}
+                onClose={() => setIsComparisonModalOpen(false)}
+            />
         </div>
     );
 }

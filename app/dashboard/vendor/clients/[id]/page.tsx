@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { ChevronLeft, User, Phone, Mail } from 'lucide-react';
-import ClientProfileHeader from '../../../components/vendor/clients/ClientProfileHeader';
-import ProcurementHistory from '../../../components/vendor/clients/ProcurementHistory';
-import RelevantDocuments from '../../../components/vendor/clients/RelevantDocuments';
+import ClientProfileHeader from '@/app/dashboard/components/vendor/clients/ClientProfileHeader';
+import ProcurementHistory from '@/app/dashboard/components/vendor/clients/ProcurementHistory';
+import RelevantDocuments from '@/app/dashboard/components/vendor/clients/RelevantDocuments';
 
 // Note: In a real app, you would fetch data based on the params.id
 export default function ClientDetailsPage({ params }: { params: { id: string } }) {

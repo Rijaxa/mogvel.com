@@ -2,12 +2,12 @@
 
 import { exportToCSV } from '@/lib/export';
 import { useState, useMemo } from 'react';
-import StockStats from '../../components/stock/StockStats';
-import FilterSortBar from '../../components/stock/FilterSortBar';
-import ProductCard from '../../components/stock/ProductCard';
-import ReorderModal from '../../components/stock/ReorderModal';
-import ManageStockModal from '../../components/stock/ManageStockModal';
-import BulkReorderModal from '../../components/stock/BulkReorderModal';
+import StockStats from '@/app/dashboard/components/stock/StockStats';
+import FilterSortBar from '@/app/dashboard/components/stock/FilterSortBar';
+import ProductCard from '@/app/dashboard/components/stock/ProductCard';
+import ReorderModal from '@/app/dashboard/components/stock/ReorderModal';
+import ManageStockModal from '@/app/dashboard/components/stock/ManageStockModal';
+import BulkReorderModal from '@/app/dashboard/components/stock/BulkReorderModal';
 import { X } from 'lucide-react';
 
 // Mock data with better images

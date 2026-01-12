@@ -1,10 +1,12 @@
 import { Bell, Search, ChevronDown, User, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import VendorNotifications from './vendor/popups/VendorNotifications';
 import { useAuth } from '@/app/context/AuthContext';
 import { useState, useRef } from 'react';
 
 export default function TopBar() {
     const { user } = useAuth();
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     return (
         <div className="h-16 px-8 border-b border-slate-200 bg-white flex items-center justify-between sticky top-0 z-20">
 
@@ -23,7 +25,10 @@ export default function TopBar() {
             {/* Right Side Actions */}
             <div className="flex items-center gap-6 ml-auto">
                 {/* Notifications */}
-                <button className="relative p-1 rounded-full text-slate-400 hover:text-slate-500 focus:outline-none">
+                <button
+                    onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                    className="relative p-1 rounded-full text-slate-400 hover:text-slate-500 focus:outline-none"
+                >
                     <span className="sr-only">View notifications</span>
                     <Bell className="h-6 w-6" />
                     <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center border-2 border-white">
@@ -31,8 +36,16 @@ export default function TopBar() {
                     </span>
                 </button>
 
+                <VendorNotifications
+                    isOpen={isNotificationsOpen}
+                    onClose={() => setIsNotificationsOpen(false)}
+                />
+
                 {/* Shopping Cart - NEW */}
-                <button className="relative p-1 rounded-full text-brand/80 hover:text-brand focus:outline-none transition-colors hidden md:block">
+                <button
+                    onClick={() => console.log("Cart feature coming soon")}
+                    className="relative p-1 rounded-full text-brand/80 hover:text-brand focus:outline-none transition-colors hidden md:block"
+                >
                     <span className="sr-only">View basket</span>
                     <div className="bg-brand/10 p-2 rounded-full">
                         <ShoppingCart className="h-5 w-5" />

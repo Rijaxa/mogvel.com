@@ -10,7 +10,7 @@ export default function TopProducts() {
     ];
 
     return (
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 h-full">
+        <div className="bg-white rounded-2xl p-6 border border-slate-100">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-sm font-bold text-slate-900">Top Products</h3>
                 <button className="flex items-center gap-1 text-xs font-bold text-brand hover:text-brand/80">

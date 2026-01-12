@@ -1,6 +1,7 @@
 'use client';
 
 import { X, Eye } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface PendingOrdersModalProps {
     isOpen: boolean;
@@ -8,6 +9,7 @@ interface PendingOrdersModalProps {
 }
 
 export default function PendingOrdersModal({ isOpen, onClose }: PendingOrdersModalProps) {
+    const router = useRouter();
     if (!isOpen) return null;
 
     const pendingOrders = [
@@ -48,7 +50,10 @@ export default function PendingOrdersModal({ isOpen, onClose }: PendingOrdersMod
                         ))}
                     </div>
 
-                    <button className="w-full py-3 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-brand/20">
+                    <button
+                        onClick={() => router.push('/dashboard/vendor/orders?status=pending')}
+                        className="w-full py-3 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-brand/20"
+                    >
                         <Eye className="w-5 h-5" />
                         View All Pending Orders
                     </button>

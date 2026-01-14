@@ -12,14 +12,16 @@ const RegisterSchema = z.object({
     name: z.string().min(1).optional(),
 });
 
-export const registerUser = async (values: z.infer<typeof RegisterSchema>) => {
-    const validatedFields = RegisterSchema.safeParse(values);
+export const registerUser = async (values: any) => {
+    // Basic validation manually or use Zod schema passed in. 
+    // We expect values to have: email, password, name, organizationName, accountType ('vendor' | 'company')
 
-    if (!validatedFields.success) {
-        return { error: "Invalid fields" };
+    const { email, password, name, organizationName, accountType } = values;
+
+    if (!email || !password || !organizationName || !accountType) {
+        return { error: "Missing required fields!" };
     }
 
-    const { email, password, name } = validatedFields.data;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const existingUser = await db.user.findUnique({
@@ -30,26 +32,61 @@ export const registerUser = async (values: z.infer<typeof RegisterSchema>) => {
         return { error: "Email already in use!" };
     }
 
-    await db.user.create({
-        data: {
-            name,
-            email,
-            password: hashedPassword,
-        },
-    });
+    try {
+        await db.$transaction(async (tx) => {
+            // 1. Create User
+            const user = await tx.user.create({
+                data: {
+                    name,
+                    email,
+                    password: hashedPassword,
+                    role: 'admin', // First user of an org is an admin of that org
+                },
+            });
 
-    // Automatically sign in upon registration?
-    // For now, we prefer to let them login to verify credentials flow
-    return { success: "User created!" };
+            // 2. Create Organization
+            const org = await tx.organization.create({
+                data: {
+                    name: organizationName,
+                    type: accountType, // 'vendor' or 'company'
+                    status: 'active',
+                },
+            });
+
+            // 3. Create Default Role for this Org
+            const ownerRole = await tx.role.create({
+                data: {
+                    organizationId: org.id,
+                    name: 'Owner',
+                    scope: accountType,
+                    description: 'Full access to organization resources',
+                }
+            });
+
+            // 4. Create Membership
+            await tx.organizationMember.create({
+                data: {
+                    userId: user.id,
+                    organizationId: org.id,
+                    roleId: ownerRole.id,
+                    status: 'active',
+                }
+            });
+        });
+
+        return { success: "Account created successfully!" };
+    } catch (error) {
+        console.error("Registration Error:", error);
+        return { error: "Failed to create account. Please try again." };
+    }
 };
 
 export const login = async (values: any) => {
-    // Basic wrapper around next-auth signIn
     try {
         await signIn("credentials", {
             email: values.email,
             password: values.password,
-            redirect: false, // We'll handle redirect in client or throw
+            redirect: false,
         });
         return { success: "Logged in!" }
     } catch (error) {

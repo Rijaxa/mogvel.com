@@ -19,6 +19,10 @@ export default function OrderPage() {
     useEffect(() => {
         getOrders()
             .then((data) => {
+                if (!data) {
+                    window.location.href = '/company/login';
+                    return;
+                }
                 setOrders(data);
                 setLoading(false);
             })

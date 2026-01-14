@@ -38,8 +38,6 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
     // Address Autocomplete Logic
     useEffect(() => {
         if (address.length <= 2) {
-            setSuggestions([]);
-            setShowSuggestions(false);
             return;
         }
 
@@ -56,7 +54,7 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
                     f.properties.state?.includes('Georgia')
                 ).map((f: any) => {
                     const p = f.properties;
-                    const parts = [p.name, p.street, p.housenumber, p.city, p.postcode].filter(Boolean);
+                    // const parts = [p.name, p.street, p.housenumber, p.city, p.postcode].filter(Boolean); // Removed unused var
                     return {
                         label: [p.name || p.street, p.housenumber, p.city].filter(Boolean).join(', '),
                         full: [p.name, p.street, p.housenumber, p.city, p.postcode].filter(Boolean).join(', '),
@@ -186,7 +184,14 @@ export default function ProfileForm({ user, details }: ProfileFormProps) {
                                     name="address"
                                     type="text"
                                     value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setAddress(val);
+                                        if (val.length <= 2) {
+                                            setSuggestions([]);
+                                            setShowSuggestions(false);
+                                        }
+                                    }}
                                     onFocus={() => address.length > 2 && suggestions.length > 0 && setShowSuggestions(true)}
                                     onBlur={() => {
                                         // Delay closing to allow clicking suggestions

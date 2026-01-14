@@ -67,20 +67,83 @@ async function main() {
         }
     })
 
-    const companyRole = await prisma.role.create({
+    // Create all predefined roles for company
+    const adminRole = await prisma.role.create({
         data: {
             organizationId: companyOrg.id,
-            name: 'Owner',
+            name: 'Admin (Owner)',
             scope: 'company',
-            description: 'Default owner role'
+            description: 'Full catalogue and team control'
         }
     })
 
+    const salesManagerRole = await prisma.role.create({
+        data: {
+            organizationId: companyOrg.id,
+            name: 'Sales Manager',
+            scope: 'company',
+            description: 'Manage clients + pricing + promotions'
+        }
+    })
+
+    const salesRepRole = await prisma.role.create({
+        data: {
+            organizationId: companyOrg.id,
+            name: 'Sales Representative',
+            scope: 'company',
+            description: 'Handle assigned clients and orders'
+        }
+    })
+
+    const logisticsRole = await prisma.role.create({
+        data: {
+            organizationId: companyOrg.id,
+            name: 'Logistics Staff',
+            scope: 'company',
+            description: 'Update delivery and stock statuses'
+        }
+    })
+
+    const viewerRole = await prisma.role.create({
+        data: {
+            organizationId: companyOrg.id,
+            name: 'Viewer',
+            scope: 'company',
+            description: 'View analytics and orders only'
+        }
+    })
+
+    // Create Membership with Admin role
     await prisma.organizationMember.create({
         data: {
             organizationId: companyOrg.id,
             userId: companyUser.id,
-            roleId: companyRole.id,
+            roleId: adminRole.id,
+            status: 'active'
+        }
+    })
+
+    // Create Zura's User
+    const zuraUser = await prisma.user.upsert({
+        where: { email: 'gamtenadze.zura@gmail.com' },
+        update: {
+            password,
+            role: 'user'
+        },
+        create: {
+            email: 'gamtenadze.zura@gmail.com',
+            name: 'Zura',
+            password,
+            role: 'user'
+        }
+    })
+
+    // Add Zura to Company Team
+    await prisma.organizationMember.create({
+        data: {
+            organizationId: companyOrg.id,
+            userId: zuraUser.id,
+            roleId: adminRole.id,
             status: 'active'
         }
     })

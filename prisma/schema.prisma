@@ -320,3 +320,22 @@ model RFQResponse {
   @@unique([rfqId, vendorId])
   @@map("rfq_responses")
 }
+
+// =======================
+// Team Activity Log
+// =======================
+
+model TeamActivity {
+  id             String       @id @default(uuid())
+  organizationId String
+  actorId        String
+  actorName      String       // Denormalized for display
+  targetId       String?
+  targetName     String?      // Denormalized for display
+  action         String       // "invited", "updated_role", "suspended", "activated", "deleted", "updated_access"
+  details        String?      // JSON string with additional details
+  createdAt      DateTime     @default(now())
+
+  @@map("team_activities")
+}
+

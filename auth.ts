@@ -11,17 +11,48 @@ if (!process.env.AUTH_SECRET) {
 export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
         Credentials({
+            name: "Credentials",
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" },
+            },
             async authorize(credentials) {
+                // Basic safety check – if Auth.js filters out unexpected fields,
+                // this prevents undefined access and makes failures explicit.
+                if (!credentials?.email || !credentials?.password) {
+                    console.warn("[Auth] Missing credentials in authorize()", credentials);
+                    return null;
+                }
+
                 const email = credentials.email as string;
                 const password = credentials.password as string;
 
-                if (!email || !password) return null;
+                const user = await db.user.findUnique({
+                    where: { email },
+                    include: {
+                        membership: {
+                            include: {
+                                organization: true
+                            }
+                        }
+                    }
+                });
 
-                const user = await db.user.findUnique({ where: { email } });
                 if (!user || !user.password) return null;
 
                 const passwordsMatch = await bcrypt.compare(password, user.password);
-                if (passwordsMatch) return user;
+
+                if (passwordsMatch) {
+                    // Return user with extended properties
+                    const extendedUser: any = { ...user };
+
+                    const primaryMembership = user.membership[0];
+                    if (primaryMembership && primaryMembership.organization) {
+                        extendedUser.orgId = primaryMembership.organizationId;
+                        extendedUser.orgType = primaryMembership.organization.type;
+                    }
+                    return extendedUser;
+                }
 
                 return null;
             }
@@ -29,31 +60,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ],
     secret: process.env.AUTH_SECRET,
     callbacks: {
-        ...authConfig.callbacks, // Keep the authorized callback from config
+        ...authConfig.callbacks,
         async signIn({ user, account }) {
-            // Allow OAuth without checks if we ever add it back, but for Credentials it just works if authorize returns user
             if (account?.provider === "credentials") return true;
             return true;
         },
+        async jwt({ token, user, trigger, session }) {
+            // Initial sign in or update
+            if (user) {
+                token.id = user.id;
+                token.role = (user as any).role;
+                token.orgId = (user as any).orgId;
+                token.orgType = (user as any).orgType;
+                token.companyDetails = (user as any).companyDetails;
+            }
+            return token;
+        },
         async session({ session, token }) {
-            if (session.user?.email) {
-                const dbUser = await db.user.findUnique({ where: { email: session.user.email } });
-                if (dbUser) {
-                    session.user.id = dbUser.id;
-                    (session.user as any).role = dbUser.role;
-                    // Parse companyDetails if it's a string (since we changed it to String for SQLite compatibility if needed, or if it is JSON type handled by Prisma)
-                    // In our schema we defined it as String? for SQLite, so we parse it.
-                    try {
-                        (session.user as any).companyDetails = dbUser.companyDetails
-                            ? JSON.parse(dbUser.companyDetails as string)
-                            : null;
-                    } catch (e) {
-                        (session.user as any).companyDetails = null;
-                    }
-                }
+            // Session callback should ideally just read from token to be lightweight
+            // But if we want real-time DB changes to reflect, we can keep the DB call.
+            // For middleware consistency, reliance on token is Key.
+
+            if (token && session.user) {
+                session.user.id = token.id as string;
+                (session.user as any).role = token.role;
+                (session.user as any).orgId = token.orgId; // Crucial for Middleware
+                (session.user as any).orgType = token.orgType; // Crucial for Middleware
+                (session.user as any).companyDetails = token.companyDetails;
             }
             return session;
         }
     },
-    debug: process.env.NODE_ENV === 'development',
+    debug: false,
 })

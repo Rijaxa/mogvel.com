@@ -2,7 +2,7 @@
 
 import { Download, SlidersHorizontal } from 'lucide-react';
 import { exportToCSV } from '@/lib/export';
-import { rawOrders } from '../../lib/mockAnalyticsData';
+import { rawOrders } from '../../../lib/mockAnalyticsData';
 
 export default function AnalyticsHeader() {
     const handleExport = () => {

@@ -3,12 +3,14 @@
 import { db } from "@/lib/db";
 import { getActiveOrganization, requireUser } from "@/lib/dal";
 
+import { redirect } from "next/navigation";
+
 export async function getOrders() {
     const user = await requireUser();
     const membership = await getActiveOrganization(user.id!);
 
     if (!membership) {
-        throw new Error("No active organization found");
+        return null;
     }
 
     const orgId = membership.organizationId;

@@ -13,7 +13,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Settings,
-    HelpCircle
+    HelpCircle,
+    MessageSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -24,6 +25,7 @@ const navItems = [
     { icon: Users, label: 'Clients', href: '/dashboard/vendor/clients' },
     { icon: BarChart3, label: 'Analytics & Sales Trends', href: '/dashboard/vendor/analytics' },
     { icon: Megaphone, label: 'Promotions & Loyalty', href: '/dashboard/vendor/promotions' },
+    { icon: MessageSquare, label: 'Explore RFQs', href: '/dashboard/vendor/rfqs' },
 ];
 
 const bottomItems = [

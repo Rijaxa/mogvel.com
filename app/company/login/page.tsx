@@ -15,6 +15,7 @@ export default function CompanyLoginPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Login form submitted!");
         setIsLoading(true);
         setError(null);
 
@@ -22,6 +23,7 @@ export default function CompanyLoginPage() {
         const formData = new FormData(form);
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
+        console.log("Form values:", { email, passwordLength: password?.length, isLogin });
 
         try {
             if (isLogin) {
@@ -40,15 +42,22 @@ export default function CompanyLoginPage() {
                 }
             } else {
                 // Registration
-                const name = formData.get('companyName') as string;
-                // Import from @/actions/auth
-                const result = await registerUser({ email, password, name });
+                const userName = formData.get('userName') as string;
+                const companyName = formData.get('companyName') as string;
+
+                const result = await registerUser({
+                    email,
+                    password,
+                    name: userName,
+                    organizationName: companyName,
+                    accountType: 'company'
+                });
 
                 if (result.error) {
                     setError(result.error);
                     setIsLoading(false);
                 } else {
-                    // Auto login and then onboard
+                    // Auto login after successful registration
                     const loginRes = await signIn('credentials', {
                         email,
                         password,
@@ -56,10 +65,11 @@ export default function CompanyLoginPage() {
                     });
 
                     if (!loginRes?.error) {
-                        // Trigger onboarding
-                        await onboardUser(name, 'company');
                         router.push('/dashboard/orders');
                         router.refresh();
+                    } else {
+                        setError('Registration successful but login failed. Please try logging in manually.');
+                        setIsLoading(false);
                     }
                 }
             }
@@ -102,17 +112,31 @@ export default function CompanyLoginPage() {
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {!isLogin && (
-                                <div>
-                                    <label htmlFor="companyName" className="block text-sm font-medium text-slate-700">
-                                        Company Name
-                                    </label>
-                                    <input
-                                        id="companyName"
-                                        name="companyName"
-                                        type="text"
-                                        required={!isLogin}
-                                        className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
-                                    />
+                                <div className="space-y-4">
+                                    <div>
+                                        <label htmlFor="userName" className="block text-sm font-medium text-slate-700">
+                                            Your Name
+                                        </label>
+                                        <input
+                                            id="userName"
+                                            name="userName"
+                                            type="text"
+                                            required={!isLogin}
+                                            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="companyName" className="block text-sm font-medium text-slate-700">
+                                            Company Name
+                                        </label>
+                                        <input
+                                            id="companyName"
+                                            name="companyName"
+                                            type="text"
+                                            required={!isLogin}
+                                            className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
+                                        />
+                                    </div>
                                 </div>
                             )}
 

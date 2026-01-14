@@ -16,7 +16,8 @@ import {
     LayoutGrid, // Added
     Package, // Added
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Tag
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,12 +27,13 @@ const navItems = [
     { icon: ClipboardList, label: 'Order Management', href: '/dashboard/orders' },
     { icon: Users, label: 'Catalogues & Vendors', href: '/dashboard/catalogues' },
     { icon: BarChart3, label: 'Analytics', href: '/dashboard/analytics' },
-    { icon: MessageSquare, label: 'Requests (RFQs / RFPs)', href: '/dashboard/requests' },
+    { icon: MessageSquare, label: 'Request for RFQs', href: '/dashboard/requests' },
+    { icon: Tag, label: 'Explore Promotions', href: '/dashboard/promotions' },
 ];
 
 const bottomItems = [
     { icon: Settings, label: 'Settings', href: '#' },
-    { icon: Users, label: 'Team Management', href: '#' },
+    { icon: Users, label: 'Team Management', href: '/dashboard/team' },
     { icon: HelpCircle, label: 'Help', href: '#' },
 ];
 

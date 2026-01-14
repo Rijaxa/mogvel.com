@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useAuth } from '../context/AuthContext';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Navbar() {
-    const { isCompanyLoggedIn } = useAuth();
+    const { data: session, status } = useSession();
+    const isAuthenticated = status === 'authenticated';
 
     return (
         <nav className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
@@ -23,15 +24,37 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-4">
-                <Link
-                    href={isCompanyLoggedIn ? "/dashboard/company" : "/company/login"}
-                    className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
-                >
-                    Company Login
-                </Link>
-                <Link href="/dashboard/vendor" className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors">
-                    Vendor Login
-                </Link>
+                {isAuthenticated ? (
+                    <>
+                        <Link
+                            href="/dashboard/orders"
+                            className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
+                        >
+                            Dashboard
+                        </Link>
+                        <button
+                            onClick={() => signOut({ callbackUrl: '/' })}
+                            className="px-4 py-2 text-sm font-medium text-white bg-brand rounded-full hover:bg-brand/90 transition-colors"
+                        >
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <Link
+                            href="/company/login"
+                            className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
+                        >
+                            Company Login
+                        </Link>
+                        <Link
+                            href="/vendor/login"
+                            className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
+                        >
+                            Vendor Login
+                        </Link>
+                    </>
+                )}
             </div>
         </nav>
     );

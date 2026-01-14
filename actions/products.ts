@@ -12,19 +12,22 @@ export async function getProducts() {
 
     const orgId = membership.organizationId;
 
-    // If vendor, show own products
-    // If company, show products from linked vendors? or generic catalog? 
-    // Usually "Catalogues" page suggests browsing available products.
+    const orgType = membership.organization.type;
 
-    // For now, let's just fetch all products if Company (marketplace style) 
-    // OR restricted to linked vendors.
-    // The previous mock data implies a list of products.
+    let whereClause: any = { status: 'active' };
+
+    // Tenant Isolation
+    if (orgType === 'vendor') {
+        whereClause = {
+            vendorId: orgId, // RESTRICT to own products
+            // status: 'active' // Vendors might want to see their inactive/draft products too? 
+            // Let's assume they want to see everything
+        };
+        // Remove status check for vendors so they see inactive ones too
+    }
 
     const products = await db.product.findMany({
-        where: {
-            // Simple logic: if vendor, only mine. If company, all active?
-            status: 'active'
-        },
+        where: whereClause,
         include: {
             vendor: true
         }

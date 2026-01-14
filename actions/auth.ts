@@ -2,9 +2,11 @@
 
 import * as z from 'zod';
 import { db } from '@/lib/db';
+import { users, organizations, roles, organizationMembers } from '@/lib/db/schema';
 import bcrypt from 'bcryptjs';
 import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
+import { eq } from 'drizzle-orm';
 
 const RegisterSchema = z.object({
     email: z.string().email(),
@@ -24,8 +26,8 @@ export const registerUser = async (values: any) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const existingUser = await db.user.findUnique({
-        where: { email },
+    const existingUser = await db.query.users.findFirst({
+        where: eq(users.email, email),
     });
 
     if (existingUser) {
@@ -33,44 +35,37 @@ export const registerUser = async (values: any) => {
     }
 
     try {
-        await db.$transaction(async (tx) => {
+        // Drizzle doesn't have built-in transactions like Prisma, so we use db.transaction
+        await db.transaction(async (tx) => {
             // 1. Create User
-            const user = await tx.user.create({
-                data: {
-                    name,
-                    email,
-                    password: hashedPassword,
-                    role: 'admin', // First user of an org is an admin of that org
-                },
-            });
+            const [user] = await tx.insert(users).values({
+                name,
+                email,
+                password: hashedPassword,
+                role: 'admin', // First user of an org is an admin of that org
+            }).returning();
 
             // 2. Create Organization
-            const org = await tx.organization.create({
-                data: {
-                    name: organizationName,
-                    type: accountType, // 'vendor' or 'company'
-                    status: 'active',
-                },
-            });
+            const [org] = await tx.insert(organizations).values({
+                name: organizationName,
+                type: accountType, // 'vendor' or 'company'
+                status: 'active',
+            }).returning();
 
             // 3. Create Default Role for this Org
-            const ownerRole = await tx.role.create({
-                data: {
-                    organizationId: org.id,
-                    name: 'Owner',
-                    scope: accountType,
-                    description: 'Full access to organization resources',
-                }
-            });
+            const [ownerRole] = await tx.insert(roles).values({
+                organizationId: org.id,
+                name: 'Owner',
+                scope: accountType,
+                description: 'Full access to organization resources',
+            }).returning();
 
             // 4. Create Membership
-            await tx.organizationMember.create({
-                data: {
-                    userId: user.id,
-                    organizationId: org.id,
-                    roleId: ownerRole.id,
-                    status: 'active',
-                }
+            await tx.insert(organizationMembers).values({
+                userId: user.id,
+                organizationId: org.id,
+                roleId: ownerRole.id,
+                status: 'active',
             });
         });
 

@@ -5,6 +5,10 @@ import { X, ChevronDown } from 'lucide-react';
 import { addTeamMember } from '@/actions/team';
 
 export default function AddMemberModal({ roles, onClose, onSuccess }: any) {
+    console.log('🔍 AddMemberModal received roles:', roles);
+    console.log('🔍 Roles count:', roles?.length);
+    console.log('🔍 First role:', roles?.[0]);
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',

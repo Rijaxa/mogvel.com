@@ -1,8 +1,9 @@
 'use server';
 
 import { db } from "@/lib/db";
+import { companyVendorLinks, organizations } from "@/lib/db/schema";
 import { getActiveOrganization, requireUser } from "@/lib/dal";
-import { revalidatePath } from "next/cache";
+import { eq, and } from "drizzle-orm";
 
 export async function getLinkedVendors() {
     const user = await requireUser();
@@ -11,12 +12,12 @@ export async function getLinkedVendors() {
     if (!membership) return [];
 
     // Logic: fetch vendors linked to this company
-    const links = await db.companyVendorLink.findMany({
-        where: {
-            companyId: membership.organizationId,
-            status: 'active'
-        },
-        include: {
+    const links = await db.query.companyVendorLinks.findMany({
+        where: and(
+            eq(companyVendorLinks.companyId, membership.organizationId),
+            eq(companyVendorLinks.status, 'active')
+        ),
+        with: {
             vendor: true
         }
     });

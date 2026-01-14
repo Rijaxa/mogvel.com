@@ -2,9 +2,11 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
 import { revalidatePath } from "next/cache";
 import fs from "fs";
 import path from "path";
+import { eq } from "drizzle-orm";
 
 export async function updateUserProfile(formData: FormData) {
     const session = await auth();
@@ -53,8 +55,9 @@ export async function updateUserProfile(formData: FormData) {
     }
 
     // Prepare update object (only update logo if one was uploaded)
-    // Prepare update object (only update logo if one was uploaded)
-    const existingUser = await db.user.findUnique({ where: { email: session.user.email } });
+    const existingUser = await db.query.users.findFirst({
+        where: eq(users.email, session.user.email)
+    });
 
     let existingLogo = undefined;
     if (existingUser?.companyDetails) {
@@ -87,12 +90,10 @@ export async function updateUserProfile(formData: FormData) {
         isProfileComplete: !!(organisationName && legalName && registrationNumber && city && address && contactPerson && phone && contactEmail)
     };
 
-    const updatedUser = await db.user.update({
-        where: { email: session.user.email },
-        data: {
-            companyDetails: JSON.stringify(newCompanyDetails)
-        }
-    });
+    const [updatedUser] = await db.update(users)
+        .set({ companyDetails: JSON.stringify(newCompanyDetails) })
+        .where(eq(users.email, session.user.email))
+        .returning();
 
     if (!updatedUser) {
         return { error: "User not found" };

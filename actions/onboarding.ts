@@ -1,7 +1,9 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { organizations, roles, organizationMembers } from '@/lib/db/schema';
 import { auth } from '@/auth';
+import { eq } from 'drizzle-orm';
 
 export async function createOrganization(formData: FormData) {
     const session = await auth();
@@ -18,18 +20,31 @@ export async function createOrganization(formData: FormData) {
 
     // Transaction: Create Org + Membership + Role
     try {
-        const organization = await db.organization.create({
-            data: {
+        const organization = await db.transaction(async (tx) => {
+            // 1. Create Org
+            const [org] = await tx.insert(organizations).values({
                 name,
                 type,
-                members: {
-                    create: {
-                        userId: session.user.id,
-                        roleId: await getOrCreateDefaultRole(name, type),
-                        status: 'active'
-                    }
-                }
-            }
+                status: 'active'
+            }).returning();
+
+            // 2. Create Owner Role
+            const [role] = await tx.insert(roles).values({
+                organizationId: org.id,
+                scope: type,
+                name: 'Owner',
+                description: 'Full access to organization'
+            }).returning();
+
+            // 3. Create Membership
+            await tx.insert(organizationMembers).values({
+                userId: session.user!.id!,
+                organizationId: org.id,
+                roleId: role.id,
+                status: 'active'
+            });
+
+            return org;
         });
 
         return { success: true, organization };
@@ -37,15 +52,6 @@ export async function createOrganization(formData: FormData) {
         console.error("Onboarding error:", error);
         return { error: "Failed to create organization" };
     }
-}
-
-async function getOrCreateDefaultRole(orgName: string, orgType: string) {
-    // This logic is a bit circular because Roles are tied to Org. 
-    // We need to create the Org first, then the Role. 
-    // Prisma `create` with nested writes handles this better if we structure it differently.
-    // However, since we need to return a Role ID in the `members.create`, we might need a different approach.
-    // simpler: Create Org -> Create Role -> Create Member.
-    return "temp-role-id"; // Placeholder, see logic correction below
 }
 
 // Corrected Approach: Atomic transaction for Onboarding
@@ -58,42 +64,36 @@ export async function onboardUser(orgName: string, orgType: string) {
     const userId = session.user.id;
 
     // existing check
-    const existingMember = await db.organizationMember.findFirst({
-        where: { userId: userId }
+    const existingMember = await db.query.organizationMembers.findFirst({
+        where: eq(organizationMembers.userId, userId!)
     });
 
     if (existingMember) {
         return { message: "Already onboarded" };
     }
 
-    return await db.$transaction(async (tx) => {
+    return await db.transaction(async (tx) => {
         // 1. Create Org
-        const org = await tx.organization.create({
-            data: {
-                name: orgName,
-                type: orgType,
-                status: 'active'
-            }
-        });
+        const [org] = await tx.insert(organizations).values({
+            name: orgName,
+            type: orgType,
+            status: 'active'
+        }).returning();
 
         // 2. Create Owner Role
-        const role = await tx.role.create({
-            data: {
-                organizationId: org.id,
-                scope: orgType,
-                name: 'Owner',
-                description: 'Full access to organization'
-            }
-        });
+        const [role] = await tx.insert(roles).values({
+            organizationId: org.id,
+            scope: orgType,
+            name: 'Owner',
+            description: 'Full access to organization'
+        }).returning();
 
         // 3. Create Membership
-        await tx.organizationMember.create({
-            data: {
-                userId: userId!,
-                organizationId: org.id,
-                roleId: role.id,
-                status: 'active'
-            }
+        await tx.insert(organizationMembers).values({
+            userId: userId!,
+            organizationId: org.id,
+            roleId: role.id,
+            status: 'active'
         });
 
         return org;

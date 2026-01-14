@@ -1,8 +1,10 @@
 'use server';
 
 import { db } from '@/lib/db';
+import { users, organizationMembers, roles, teamActivities } from '@/lib/db/schema';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
+import { eq, desc, asc } from 'drizzle-orm';
 
 // Helper to log team activity
 async function logActivity(
@@ -14,16 +16,14 @@ async function logActivity(
     targetName?: string,
     details?: any
 ) {
-    await db.teamActivity.create({
-        data: {
-            organizationId,
-            actorId,
-            actorName,
-            targetId,
-            targetName,
-            action,
-            details: details ? JSON.stringify(details) : null,
-        },
+    await db.insert(teamActivities).values({
+        organizationId,
+        actorId,
+        actorName,
+        targetId,
+        targetName,
+        action,
+        details: details ? JSON.stringify(details) : null,
     });
 }
 
@@ -36,9 +36,9 @@ export async function getTeamMembers() {
 
     try {
         // Get user's organization
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
-            include: { organization: true },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
+            with: { organization: true },
         });
 
         if (!membership) {
@@ -46,13 +46,18 @@ export async function getTeamMembers() {
         }
 
         // Get all members of the organization
-        const members = await db.organizationMember.findMany({
-            where: { organizationId: membership.organizationId },
-            include: {
+        const members = await db.query.organizationMembers.findMany({
+            where: eq(organizationMembers.organizationId, membership.organizationId),
+            with: {
                 user: true,
                 role: true,
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: [desc(organizationMembers.createdAt)],
+        });
+
+        console.log('✅ getTeamMembers:', {
+            orgId: membership.organizationId,
+            memberCount: members.length
         });
 
         return { members, organizationId: membership.organizationId };
@@ -75,9 +80,9 @@ export async function addTeamMember(data: {
 
     try {
         // Get user's organization
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
-            include: { organization: true },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
+            with: { organization: true },
         });
 
         if (!membership) {
@@ -85,27 +90,22 @@ export async function addTeamMember(data: {
         }
 
         // Check if user already exists
-        let user = await db.user.findUnique({
-            where: { email: data.email },
+        let user = await db.query.users.findFirst({
+            where: eq(users.email, data.email),
         });
 
         // If user doesn't exist, create them
         if (!user) {
-            user = await db.user.create({
-                data: {
-                    email: data.email,
-                    name: data.name,
-                    role: 'user',
-                },
-            });
+            [user] = await db.insert(users).values({
+                email: data.email,
+                name: data.name,
+                role: 'user',
+            }).returning();
         }
 
         // Check if already a member
-        const existingMember = await db.organizationMember.findFirst({
-            where: {
-                organizationId: membership.organizationId,
-                userId: user.id,
-            },
+        const existingMember = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, user.id),
         });
 
         if (existingMember) {
@@ -113,14 +113,17 @@ export async function addTeamMember(data: {
         }
 
         // Create membership
-        const newMember = await db.organizationMember.create({
-            data: {
-                organizationId: membership.organizationId,
-                userId: user.id,
-                roleId: data.roleId,
-                status: 'active',
-            },
-            include: {
+        const [newMember] = await db.insert(organizationMembers).values({
+            organizationId: membership.organizationId,
+            userId: user.id,
+            roleId: data.roleId,
+            status: 'active',
+        }).returning();
+
+        // Fetch the complete member with relations
+        const completeMember = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.id, newMember.id),
+            with: {
                 user: true,
                 role: true,
             },
@@ -134,11 +137,11 @@ export async function addTeamMember(data: {
             'invited',
             user.id,
             data.name,
-            { role: newMember.role.name }
+            { role: completeMember?.role.name }
         );
 
         revalidatePath('/dashboard/team');
-        return { success: true, member: newMember };
+        return { success: true, member: completeMember };
     } catch (error) {
         console.error('Error adding team member:', error);
         return { error: 'Failed to add team member' };
@@ -153,31 +156,34 @@ export async function updateMemberRole(memberId: string, roleId: string) {
     }
 
     try {
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
         });
 
         if (!membership) {
             return { error: 'No organization found' };
         }
 
-        const member = await db.organizationMember.findUnique({
-            where: { id: memberId },
-            include: { user: true, role: true },
+        const member = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.id, memberId),
+            with: { user: true, role: true },
         });
 
         if (!member || member.organizationId !== membership.organizationId) {
             return { error: 'Member not found' };
         }
 
-        const newRole = await db.role.findUnique({
-            where: { id: roleId },
+        const newRole = await db.query.roles.findFirst({
+            where: eq(roles.id, roleId),
         });
 
-        const updatedMember = await db.organizationMember.update({
-            where: { id: memberId },
-            data: { roleId },
-            include: { user: true, role: true },
+        await db.update(organizationMembers)
+            .set({ roleId })
+            .where(eq(organizationMembers.id, memberId));
+
+        const updatedMember = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.id, memberId),
+            with: { user: true, role: true },
         });
 
         // Log activity
@@ -207,27 +213,30 @@ export async function updateMemberStatus(memberId: string, status: 'active' | 'd
     }
 
     try {
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
         });
 
         if (!membership) {
             return { error: 'No organization found' };
         }
 
-        const member = await db.organizationMember.findUnique({
-            where: { id: memberId },
-            include: { user: true },
+        const member = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.id, memberId),
+            with: { user: true },
         });
 
         if (!member || member.organizationId !== membership.organizationId) {
             return { error: 'Member not found' };
         }
 
-        const updatedMember = await db.organizationMember.update({
-            where: { id: memberId },
-            data: { status },
-            include: { user: true, role: true },
+        await db.update(organizationMembers)
+            .set({ status })
+            .where(eq(organizationMembers.id, memberId));
+
+        const updatedMember = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.id, memberId),
+            with: { user: true, role: true },
         });
 
         // Log activity
@@ -256,26 +265,25 @@ export async function deleteMember(memberId: string) {
     }
 
     try {
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
         });
 
         if (!membership) {
             return { error: 'No organization found' };
         }
 
-        const member = await db.organizationMember.findUnique({
-            where: { id: memberId },
-            include: { user: true },
+        const member = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.id, memberId),
+            with: { user: true },
         });
 
         if (!member || member.organizationId !== membership.organizationId) {
             return { error: 'Member not found' };
         }
 
-        await db.organizationMember.delete({
-            where: { id: memberId },
-        });
+        await db.delete(organizationMembers)
+            .where(eq(organizationMembers.id, memberId));
 
         // Log activity
         await logActivity(
@@ -303,18 +311,18 @@ export async function getTeamActivity() {
     }
 
     try {
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
         });
 
         if (!membership) {
             return { error: 'No organization found' };
         }
 
-        const activities = await db.teamActivity.findMany({
-            where: { organizationId: membership.organizationId },
-            orderBy: { createdAt: 'desc' },
-            take: 50, // Last 50 activities
+        const activities = await db.query.teamActivities.findMany({
+            where: eq(teamActivities.organizationId, membership.organizationId),
+            orderBy: [desc(teamActivities.createdAt)],
+            limit: 50, // Last 50 activities
         });
 
         return { activities };
@@ -332,20 +340,26 @@ export async function getOrganizationRoles() {
     }
 
     try {
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
         });
 
         if (!membership) {
             return { error: 'No organization found' };
         }
 
-        const roles = await db.role.findMany({
-            where: { organizationId: membership.organizationId },
-            orderBy: { name: 'asc' },
+        const rolesList = await db.query.roles.findMany({
+            where: eq(roles.organizationId, membership.organizationId),
+            orderBy: [asc(roles.name)],
         });
 
-        return { roles };
+        console.log('✅ getOrganizationRoles:', {
+            orgId: membership.organizationId,
+            roleCount: rolesList.length,
+            roles: rolesList.map(r => r.name)
+        });
+
+        return { roles: rolesList };
     } catch (error) {
         console.error('Error fetching roles:', error);
         return { error: 'Failed to fetch roles' };
@@ -360,21 +374,21 @@ export async function exportTeamCSV() {
     }
 
     try {
-        const membership = await db.organizationMember.findFirst({
-            where: { userId: session.user.id },
+        const membership = await db.query.organizationMembers.findFirst({
+            where: eq(organizationMembers.userId, session.user.id),
         });
 
         if (!membership) {
             return { error: 'No organization found' };
         }
 
-        const members = await db.organizationMember.findMany({
-            where: { organizationId: membership.organizationId },
-            include: {
+        const members = await db.query.organizationMembers.findMany({
+            where: eq(organizationMembers.organizationId, membership.organizationId),
+            with: {
                 user: true,
                 role: true,
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: [desc(organizationMembers.createdAt)],
         });
 
         // Generate CSV content

@@ -11,10 +11,10 @@ export default async function AdminPage() {
     //     redirect('/dashboard/company');
     // }
 
-    const rawUsers = await db.user.findMany({
-        include: {
-            membership: {
-                include: {
+    const rawUsers = await db.query.users.findMany({
+        with: {
+            memberships: {
+                with: {
                     organization: true
                 }
             }
@@ -22,7 +22,7 @@ export default async function AdminPage() {
     });
 
     const users = rawUsers.map(user => {
-        const org = user.membership[0]?.organization;
+        const org = user.memberships[0]?.organization;
         return {
             ...user,
             organizationName: org?.name || 'N/A',
@@ -67,8 +67,8 @@ export default async function AdminPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${user.organizationType === 'vendor'
-                                                ? 'bg-purple-50 text-purple-700 border-purple-100'
-                                                : 'bg-blue-50 text-blue-700 border-blue-100'
+                                            ? 'bg-purple-50 text-purple-700 border-purple-100'
+                                            : 'bg-blue-50 text-blue-700 border-blue-100'
                                             }`}>
                                             {user.organizationType.toUpperCase()}
                                         </span>

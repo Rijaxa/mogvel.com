@@ -22,18 +22,28 @@ export default function TeamManagementPage() {
     }, []);
 
     async function loadData() {
+        console.log('🔄 loadData called');
         setLoading(true);
         const [membersResult, rolesResult] = await Promise.all([
             getTeamMembers(),
             getOrganizationRoles(),
         ]);
 
+        console.log('📊 membersResult:', membersResult);
+        console.log('📊 rolesResult:', rolesResult);
+
         if (!membersResult.error && membersResult.members) {
+            console.log('✅ Setting members:', membersResult.members.length);
             setMembers(membersResult.members);
+        } else {
+            console.error('❌ Members error:', membersResult.error);
         }
 
         if (!rolesResult.error && rolesResult.roles) {
+            console.log('✅ Setting roles:', rolesResult.roles.length);
             setRoles(rolesResult.roles);
+        } else {
+            console.error('❌ Roles error:', rolesResult.error);
         }
 
         setLoading(false);
@@ -86,8 +96,8 @@ export default function TeamManagementPage() {
                 <button
                     onClick={() => setActiveTab('members')}
                     className={`px-4 py-2 font-medium transition-colors ${activeTab === 'members'
-                            ? 'text-brand border-b-2 border-brand'
-                            : 'text-slate-600 hover:text-slate-900'
+                        ? 'text-brand border-b-2 border-brand'
+                        : 'text-slate-600 hover:text-slate-900'
                         }`}
                 >
                     Members
@@ -95,8 +105,8 @@ export default function TeamManagementPage() {
                 <button
                     onClick={() => setActiveTab('roles')}
                     className={`px-4 py-2 font-medium transition-colors ${activeTab === 'roles'
-                            ? 'text-brand border-b-2 border-brand'
-                            : 'text-slate-600 hover:text-slate-900'
+                        ? 'text-brand border-b-2 border-brand'
+                        : 'text-slate-600 hover:text-slate-900'
                         }`}
                 >
                     Roles & Permissions
@@ -104,8 +114,8 @@ export default function TeamManagementPage() {
                 <button
                     onClick={() => setActiveTab('activity')}
                     className={`px-4 py-2 font-medium transition-colors ${activeTab === 'activity'
-                            ? 'text-brand border-b-2 border-brand'
-                            : 'text-slate-600 hover:text-slate-900'
+                        ? 'text-brand border-b-2 border-brand'
+                        : 'text-slate-600 hover:text-slate-900'
                         }`}
                 >
                     Activity Log

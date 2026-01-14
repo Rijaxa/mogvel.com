@@ -17,44 +17,58 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                // Basic safety check – if Auth.js filters out unexpected fields,
-                // this prevents undefined access and makes failures explicit.
+                console.log('🔐 [Auth] Authorize called with:', { email: credentials?.email });
+
                 if (!credentials?.email || !credentials?.password) {
-                    console.warn("[Auth] Missing credentials in authorize()", credentials);
+                    console.warn("[Auth] Missing credentials");
                     return null;
                 }
 
                 const email = credentials.email as string;
                 const password = credentials.password as string;
 
-                const user = await db.user.findUnique({
-                    where: { email },
-                    include: {
-                        membership: {
-                            include: {
-                                organization: true
+                try {
+                    console.log('🔍 [Auth] Looking up user:', email);
+                    const user = await db.query.users.findFirst({
+                        where: (users, { eq }) => eq(users.email, email),
+                        with: {
+                            memberships: {
+                                with: {
+                                    organization: true
+                                }
                             }
                         }
+                    });
+
+                    console.log('👤 [Auth] User found:', !!user);
+
+                    if (!user || !user.password) {
+                        console.warn("[Auth] User not found or has no password");
+                        return null;
                     }
-                });
 
-                if (!user || !user.password) return null;
+                    const passwordsMatch = await bcrypt.compare(password, user.password);
+                    console.log('🔑 [Auth] Password match:', passwordsMatch);
 
-                const passwordsMatch = await bcrypt.compare(password, user.password);
+                    if (passwordsMatch) {
+                        const extendedUser: any = { ...user };
+                        const primaryMembership = user.memberships[0];
 
-                if (passwordsMatch) {
-                    // Return user with extended properties
-                    const extendedUser: any = { ...user };
+                        if (primaryMembership && primaryMembership.organization) {
+                            extendedUser.orgId = primaryMembership.organizationId;
+                            extendedUser.orgType = primaryMembership.organization.type;
+                        }
 
-                    const primaryMembership = user.membership[0];
-                    if (primaryMembership && primaryMembership.organization) {
-                        extendedUser.orgId = primaryMembership.organizationId;
-                        extendedUser.orgType = primaryMembership.organization.type;
+                        console.log('✅ [Auth] Login successful for:', email);
+                        return extendedUser;
                     }
-                    return extendedUser;
+
+                    console.warn("[Auth] Invalid password");
+                    return null;
+                } catch (error) {
+                    console.error("❌ [Auth] Authorization error:", error);
+                    return null;
                 }
-
-                return null;
             }
         })
     ],

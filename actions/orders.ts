@@ -1,9 +1,9 @@
 'use server';
 
 import { db } from "@/lib/db";
+import { orders, organizations } from "@/lib/db/schema";
 import { getActiveOrganization, requireUser } from "@/lib/dal";
-
-import { redirect } from "next/navigation";
+import { eq, desc } from "drizzle-orm";
 
 export async function getOrders() {
     const user = await requireUser();
@@ -20,33 +20,21 @@ export async function getOrders() {
     // If the org is a company, it sees orders where companyId = orgId
     // If the org is a vendor, it sees orders where vendorId = orgId
 
-    // However, Prisma schema has relations:
-    // ordersAsCompany Order[] @relation("CompanyOrders")
-    // ordersAsVendor Order[] @relation("VendorOrders")
+    const whereClause = orgType === 'company'
+        ? eq(orders.companyId, orgId)
+        : eq(orders.vendorId, orgId);
 
-    let whereClause = {};
-    if (orgType === 'company') {
-        whereClause = { companyId: orgId };
-    } else {
-        whereClause = { vendorId: orgId };
-    }
-
-    const orders = await db.order.findMany({
+    const ordersList = await db.query.orders.findMany({
         where: whereClause,
-        include: {
+        with: {
             vendor: true,
             company: true,
-            // items? Schema doesn't have OrderItems yet?
-            // Wait, schema check Step 8:
-            // Order has: subtotal, discountTotal...
-            // It does NOT have OrderItems relation shown in the view?
-            // Let me check schema again. 
         },
-        orderBy: { placedAt: 'desc' }
+        orderBy: [desc(orders.placedAt)]
     });
 
     // Transform to UI expected format (matches mock data structure if possible)
-    return orders.map(order => ({
+    return ordersList.map(order => ({
         id: order.orderNumber || order.id,
         date: order.placedAt.toLocaleDateString('en-GB'), // 16.11.2024 format
         vendor: order.vendor.name, // or company name if viewing as vendor?

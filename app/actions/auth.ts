@@ -1,7 +1,9 @@
 'use server';
 
 import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
 import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
 
 export async function register(formData: FormData) {
     const email = formData.get('email') as string;
@@ -12,7 +14,10 @@ export async function register(formData: FormData) {
         return { error: "Missing required fields" };
     }
 
-    const existingUser = await db.user.findUnique({ where: { email } });
+    const existingUser = await db.query.users.findFirst({
+        where: eq(users.email, email)
+    });
+
     if (existingUser) {
         return { error: "User already exists with this email" };
     }
@@ -24,14 +29,12 @@ export async function register(formData: FormData) {
         isProfileComplete: false
     };
 
-    await db.user.create({
-        data: {
-            email,
-            password: hashedPassword,
-            name: companyName,
-            role: 'user', // Default role
-            companyDetails: JSON.stringify(initialCompanyDetails)
-        }
+    await db.insert(users).values({
+        email,
+        password: hashedPassword,
+        name: companyName,
+        role: 'user', // Default role
+        companyDetails: JSON.stringify(initialCompanyDetails)
     });
 
     return { success: true };

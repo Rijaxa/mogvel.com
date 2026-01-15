@@ -20,8 +20,7 @@ export default function DashboardLayout({
         // Redirect to login if not logged in (NextAuth handles loading state internally in context)
         // We add a small delay or check loading state in a real app, but for now:
         if (!isCompanyLoggedIn) {
-            // router.push('/company/login'); // NextAuth middleware or client check should handle this better
-            // For now, let the AuthContext handle the redirect if needed, or implement check here
+            // Let the AuthContext handle the redirect if needed
         }
     }, [isCompanyLoggedIn, router]);
 

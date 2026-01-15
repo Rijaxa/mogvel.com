@@ -1,7 +1,10 @@
-import { Bell, Search, ChevronDown, User, ShoppingCart } from 'lucide-react';
-import { cn } from '@/lib/utils';
+'use client';
+
+import { Bell, Search, ChevronDown, ShoppingCart, User, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useState, useRef } from 'react';
+import { signOut } from 'next-auth/react';
+import Link from 'next/link';
 
 export default function TopBar() {
     const { user } = useAuth();
@@ -31,7 +34,7 @@ export default function TopBar() {
                     </span>
                 </button>
 
-                {/* Shopping Cart - NEW */}
+                {/* Shopping Cart */}
                 <button className="relative p-1 rounded-full text-brand/80 hover:text-brand focus:outline-none transition-colors hidden md:block">
                     <span className="sr-only">View basket</span>
                     <div className="bg-brand/10 p-2 rounded-full">
@@ -61,7 +64,7 @@ function ProfileDropdown({ user }: { user: any }) {
     const handleMouseLeave = () => {
         timeoutRef.current = setTimeout(() => {
             setIsOpen(false);
-        }, 1500); // 1.5 second delay before closing
+        }, 500);
     };
 
     return (
@@ -71,31 +74,50 @@ function ProfileDropdown({ user }: { user: any }) {
             onMouseLeave={handleMouseLeave}
         >
             <div className="h-9 w-9 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm">
-                {user?.companyName?.substring(0, 2).toUpperCase() || 'NP'}
+                {user?.companyName?.substring(0, 2).toUpperCase() || 'DA'}
             </div>
 
             <div className="hidden md:flex items-center cursor-pointer py-2">
                 <span className="text-sm font-bold text-slate-700 mr-1">
-                    {user?.companyName || 'NinoP'}
+                    {user?.companyName || 'David Gamtenadze'}
                 </span>
                 <ChevronDown className="h-4 w-4 text-slate-400" />
             </div>
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className="absolute right-0 top-full mt-0 w-48 bg-white rounded-lg shadow-lg border border-slate-100 py-1 z-50">
-                    <div className="px-4 py-3 border-b border-slate-100">
-                        <p className="text-sm text-slate-900 font-medium truncate">{user?.companyName || 'NinoP'}</p>
-                        <p className="text-xs text-slate-500 truncate">{user?.email}</p>
+                <div className="absolute right-0 top-full mt-0 w-64 bg-white rounded-lg shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="px-4 py-3 border-b border-slate-100 mb-2">
+                        <p className="text-sm text-slate-900 font-bold truncate">{user?.companyName || 'David Gamtenadze'}</p>
+                        <p className="text-xs text-slate-500 truncate">{user?.email || 'workifyge@gmail.com'}</p>
                     </div>
-                    <a href="/dashboard/profile" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
+
+                    <Link href="/dashboard/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand transition-colors">
+                        <User className="w-4 h-4" />
                         My Profile
-                    </a>
+                    </Link>
+
+                    <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand transition-colors">
+                        <Settings className="w-4 h-4" />
+                        Settings
+                    </Link>
+
                     {user?.email === 'purtseladze.nino@gmail.com' && (
-                        <a href="/dashboard/admin" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-brand">
+                        <Link href="/dashboard/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-purple-600 hover:bg-purple-50 transition-colors">
+                            <Settings className="w-4 h-4" />
                             Super Admin
-                        </a>
+                        </Link>
                     )}
+
+                    <div className="border-t border-slate-100 mt-2 pt-2">
+                        <button
+                            onClick={() => signOut({ callbackUrl: '/' })}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Sign out
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

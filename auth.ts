@@ -87,6 +87,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 token.orgId = (user as any).orgId;
                 token.orgType = (user as any).orgType;
                 token.companyDetails = (user as any).companyDetails;
+                token.lastName = (user as any).lastName;
+                token.phone = (user as any).phone;
+                token.jobPosition = (user as any).jobPosition;
+            }
+            // Support trigger="update" for client-side session updates
+            if (trigger === "update" && session) {
+                token.name = session.name;
+                token.lastName = session.lastName;
+                token.phone = session.phone;
+                token.jobPosition = session.jobPosition;
             }
             return token;
         },
@@ -101,6 +111,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 (session.user as any).orgId = token.orgId; // Crucial for Middleware
                 (session.user as any).orgType = token.orgType; // Crucial for Middleware
                 (session.user as any).companyDetails = token.companyDetails;
+                (session.user as any).lastName = token.lastName;
+                (session.user as any).phone = token.phone;
+                (session.user as any).jobPosition = token.jobPosition;
             }
             return session;
         }

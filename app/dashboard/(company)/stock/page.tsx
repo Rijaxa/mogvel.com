@@ -1,7 +1,7 @@
 'use client';
 
 import { exportToCSV } from '@/lib/export';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import StockStats from '../../components/stock/StockStats';
 import FilterSortBar from '../../components/stock/FilterSortBar';
 import ProductCard from '../../components/stock/ProductCard';
@@ -9,78 +9,11 @@ import ReorderModal from '../../components/stock/ReorderModal';
 import ManageStockModal from '../../components/stock/ManageStockModal';
 import BulkReorderModal from '../../components/stock/BulkReorderModal';
 import { X } from 'lucide-react';
-
-// Mock data with better images
-const initialProducts = [
-    {
-        title: 'Disposable Gloves (Box)',
-        category: 'Safety Equipment',
-        currentStock: 6,
-        maxStock: 60,
-        consumption: 18,
-        lastOrder: '12/10/2025',
-        vendor: 'SafetyFirst Supply',
-        minStock: 15,
-        unitPrice: 15.00,
-        recommendedQuantity: 54,
-        image: '/products/gloves.png'
-    },
-    {
-        title: 'Office Paper A4 (Box of 10)',
-        category: 'Office Equipment',
-        currentStock: 8,
-        maxStock: 50,
-        consumption: 15,
-        lastOrder: '10/10/2025',
-        vendor: 'OfficeMax Direct',
-        minStock: 10,
-        unitPrice: 50.36,
-        recommendedQuantity: 42,
-        image: '/products/paper.png'
-    },
-    {
-        title: 'Trash Bags (Heavy Duty)',
-        category: 'Cleaning Supply',
-        currentStock: 10,
-        maxStock: 75,
-        consumption: 12,
-        lastOrder: '18/10/2025',
-        vendor: 'CleanPro',
-        minStock: 20,
-        unitPrice: 8.50,
-        recommendedQuantity: 65,
-        image: '/products/bags.png'
-    },
-    {
-        title: 'Hand Sanitizer (5L)',
-        category: 'Cleaning Supply',
-        currentStock: 12,
-        maxStock: 100,
-        consumption: 20,
-        lastOrder: '15/10/2025',
-        vendor: 'CleanPro',
-        minStock: 25,
-        unitPrice: 24.50,
-        recommendedQuantity: 88,
-        image: '/products/sanitizer.png'
-    },
-    {
-        title: 'Cleaning Wipes (Industrial)',
-        category: 'Cleaning Supply',
-        currentStock: 45,
-        maxStock: 80,
-        consumption: 10,
-        lastOrder: '20/10/2025',
-        vendor: 'HygieneCo',
-        minStock: 15,
-        unitPrice: 12.00,
-        recommendedQuantity: 50,
-        image: '/products/wipes.png'
-    },
-];
+import { getCompanyStock } from '@/actions/company/stock';
 
 export default function StockPage() {
-    const [products] = useState(initialProducts);
+    const [products, setProducts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [sortOption, setSortOption] = useState("stockLevel");
     const [modalState, setModalState] = useState<{
@@ -88,6 +21,44 @@ export default function StockPage() {
         product?: any;
     }>({ type: null });
     const [expandedImage, setExpandedImage] = useState<string | null>(null);
+
+    // Fetch stock data from database
+    useEffect(() => {
+        async function loadStock() {
+            setIsLoading(true);
+            const result = await getCompanyStock();
+
+            if (result.stock) {
+                // Transform database stock to UI format
+                const formattedProducts = result.stock.map((item: any) => {
+                    const pricing = item.product.pricing[0];
+                    const currentStock = parseFloat(item.currentStock);
+                    const reorderPoint = item.reorderPoint ? parseFloat(item.reorderPoint) : 15;
+                    const maxStock = reorderPoint * 4; // Estimate max as 4x reorder point
+
+                    return {
+                        title: item.product.name,
+                        category: item.product.category || 'General',
+                        currentStock,
+                        maxStock,
+                        consumption: 15, // Default, could be tracked separately
+                        lastOrder: new Date().toLocaleDateString(),
+                        vendor: item.product.vendor.name,
+                        minStock: reorderPoint,
+                        unitPrice: pricing ? parseFloat(pricing.basePrice) : 0,
+                        recommendedQuantity: Math.max(0, maxStock - currentStock),
+                        image: '/products/default.png',
+                        productId: item.product.id,
+                        stockId: item.id,
+                    };
+                });
+                setProducts(formattedProducts);
+            }
+            setIsLoading(false);
+        }
+
+        loadStock();
+    }, []);
 
     const handleExport = () => {
         exportToCSV(products, 'inventory_stock_report');
@@ -209,6 +180,7 @@ export default function StockPage() {
             </div>
 
             <StockStats
+                products={products}
                 onReorderAll={handleBulkReorder}
                 onAddStock={handleAddStock}
                 onExport={handleExport}
@@ -224,10 +196,20 @@ export default function StockPage() {
                 shownCount={filteredProducts.length}
             />
 
-            {filteredProducts.length === 0 ? (
+            {isLoading ? (
+                <div className="text-center py-20 bg-white rounded-2xl border border-slate-100">
+                    <p className="text-slate-500 font-medium">Loading stock items...</p>
+                </div>
+            ) : filteredProducts.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
-                    <p className="text-slate-500 font-medium">No products match your filter.</p>
-                    <button onClick={() => setSelectedCategory('All')} className="text-brand font-bold mt-2 hover:underline">Clear Filter</button>
+                    <p className="text-slate-500 font-medium">
+                        {products.length === 0
+                            ? "No stock items yet. Click 'Add Stock' to get started."
+                            : "No products match your filter."}
+                    </p>
+                    {products.length > 0 && (
+                        <button onClick={() => setSelectedCategory('All')} className="text-brand font-bold mt-2 hover:underline">Clear Filter</button>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

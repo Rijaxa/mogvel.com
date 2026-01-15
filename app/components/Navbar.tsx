@@ -9,11 +9,8 @@ export default function Navbar() {
 
     return (
         <nav className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
-            <Link href="/" className="flex items-center gap-2 group transition-opacity hover:opacity-80">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg">
-                    M
-                </div>
-                <span className="text-xl font-bold text-slate-900">Mogvel</span>
+            <Link href="/" className="flex items-center gap-3">
+                <img src="/mogvel-logo.png" alt="Mogvel" className="h-18" />
             </Link>
 
             <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
@@ -42,16 +39,16 @@ export default function Navbar() {
                 ) : (
                     <>
                         <Link
-                            href="/company/login"
-                            className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
+                            href="/login"
+                            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
                         >
-                            Company Login
+                            Sign In
                         </Link>
                         <Link
-                            href="/vendor/login"
-                            className="px-4 py-2 text-sm font-medium text-brand border border-brand rounded-full hover:bg-brand/10 transition-colors"
+                            href="/register"
+                            className="px-4 py-2 text-sm font-medium text-white bg-brand rounded-full hover:bg-brand/90 transition-colors"
                         >
-                            Vendor Login
+                            Get Started
                         </Link>
                     </>
                 )}

@@ -60,7 +60,11 @@ export const registerUser = async (values: any) => {
                 description: 'Full access to organization resources',
             }).returning();
 
-            // 4. Create Membership
+            // 4. Seed Default Permissions for Owner Role
+            const { seedRolePermissions } = await import('@/lib/auth/seed-permissions');
+            await seedRolePermissions(ownerRole.id, 'Owner');
+
+            // 5. Create Membership
             await tx.insert(organizationMembers).values({
                 userId: user.id,
                 organizationId: org.id,
@@ -100,3 +104,19 @@ export const login = async (values: any) => {
 export const logout = async () => {
     await signOut();
 }
+
+import { auth } from '@/auth';
+
+export const getPostLoginRedirectPath = async () => {
+    const session = await auth();
+    if (!session?.user) return '/login';
+
+    // Check orgType from session (assuming it's populated as per auth.ts)
+    const orgType = (session.user as any).orgType;
+
+    if (orgType === 'vendor') {
+        return '/dashboard/vendor/orders';
+    }
+
+    return '/dashboard/orders';
+};

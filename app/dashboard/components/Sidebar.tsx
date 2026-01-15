@@ -56,13 +56,15 @@ export default function Sidebar({
                 isCollapsed ? "w-20" : "w-64"
             )}
         >
-            <div className={cn("p-6 border-b border-slate-100 flex items-center", isCollapsed ? "justify-center" : "justify-start gap-2")}>
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg shrink-0">
-                        M
-                    </div>
+            <div className="px-4 py-6 border-b border-slate-100">
+                <Link href="/dashboard/orders" className="flex items-center gap-3">
                     {!isCollapsed && (
-                        <span className="text-xl font-bold text-slate-900 animate-in fade-in duration-300">Mogvel</span>
+                        <img src="/mogvel-logo.png" alt="Mogvel" className="h-18 animate-in fade-in duration-300" />
+                    )}
+                    {isCollapsed && (
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg">
+                            M
+                        </div>
                     )}
                 </Link>
             </div>

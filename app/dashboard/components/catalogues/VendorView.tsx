@@ -3,22 +3,28 @@
 import { Search, Box } from 'lucide-react';
 import VendorRow from './VendorRow';
 import { useEffect, useState } from 'react';
-
-const vendors = [
-    { name: 'CleanPro Supplies', isVerified: true, rating: 4.8, stability: 'Stable', stockLevel: 'High Stock', deliverySLA: '99.2%' },
-    { name: 'OfficeMax Direct', isVerified: true, rating: 4.5, stability: 'Increasing', stockLevel: 'Medium', deliverySLA: '96.8%' },
-    { name: 'HygieneCo', isVerified: true, rating: 4.9, stability: 'Decreasing', stockLevel: 'High Stock', deliverySLA: '98.5%' },
-    { name: 'Industrial Supply Co', isVerified: false, rating: 4.3, stability: 'Stable', stockLevel: 'Low Stock', deliverySLA: '94.2%' },
-];
+import { getAllVendors } from '@/actions/company/catalogue';
 
 export default function VendorView() {
     const [vendors, setVendors] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const fetchVendors = async () => {
+        setIsLoading(true);
+        const result = await getAllVendors(searchQuery);
+        if (result && result.vendors) {
+            setVendors(result.vendors);
+        }
+        setIsLoading(false);
+    };
 
     useEffect(() => {
-        import('@/actions/vendors').then(mod => {
-            mod.getLinkedVendors().then(setVendors);
-        });
-    }, []);
+        const timer = setTimeout(() => {
+            fetchVendors();
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     return (
         <div>
@@ -28,6 +34,8 @@ export default function VendorView() {
                     <input
                         type="text"
                         placeholder="Search vendors by name..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-slate-700"
                     />
                     <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
@@ -52,9 +60,6 @@ export default function VendorView() {
                         <Box className="w-5 h-5 text-brand" />
                         <h3 className="font-bold text-slate-900">Active Vendors</h3>
                     </div>
-                    <button className="text-xs font-bold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50">
-                        View All Vendors
-                    </button>
                 </div>
 
                 {/* Header Row */}
@@ -68,12 +73,16 @@ export default function VendorView() {
                 </div>
 
                 <div className="space-y-2">
-                    {vendors.length > 0 ? vendors.map((vendor, index) => (
-                        // @ts-ignore
-                        <VendorRow key={index} {...vendor} />
-                    )) : (
+                    {isLoading ? (
+                        <div className="py-8 text-center text-slate-400">Loading vendors...</div>
+                    ) : vendors.length > 0 ? (
+                        vendors.map((vendor, index) => (
+                            // @ts-ignore
+                            <VendorRow key={index} {...vendor} />
+                        ))
+                    ) : (
                         <div className="py-8 text-center text-slate-500">
-                            No verified vendors linked.
+                            No verified vendors found.
                         </div>
                     )}
                 </div>

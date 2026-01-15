@@ -1,19 +1,32 @@
 'use client';
 
-import { DollarSign, Package, AlertTriangle, TrendingUp, Info } from 'lucide-react';
+import { DollarSign, Package, AlertTriangle, TrendingUp, Info, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import SalesDetailsModal from './popups/SalesDetailsModal';
 import PendingOrdersModal from './popups/PendingOrdersModal';
 import VendorLowStockModal from './popups/VendorLowStockModal';
 import RevenueGrowthModal from './popups/RevenueGrowthModal';
+import AverageOrderValueModal from './popups/AverageOrderValueModal';
 
 export default function VendorStats() {
     const [openModal, setOpenModal] = useState<string | null>(null);
+    const currentMonth = new Date().toLocaleString('default', { month: 'long' });
+
+    // Mock orders for calculation (mirrors VendorOrders data)
+    const orders = [
+        { amount: 2340 },
+        { amount: 1850 },
+        { amount: 3120 },
+        { amount: 1280 }
+    ];
+
+    const totalValue = orders.reduce((acc, order) => acc + order.amount, 0);
+    const averageOrderValue = Math.round(totalValue / orders.length);
 
     const stats = [
         {
-            title: "Today's Sales",
+            title: `${currentMonth} Sales`,
             value: "₾12,480",
             trend: "+18%",
             trendType: "positive",
@@ -31,13 +44,14 @@ export default function VendorStats() {
             modalId: 'pending'
         },
         {
-            title: "Low Stock",
-            value: "3",
-            subtext: "Restock needed soon",
-            icon: AlertTriangle,
-            color: "bg-red-50 text-red-500",
-            alert: "Critical",
-            modalId: 'stock'
+            title: "Average Order Value",
+            value: `₾${averageOrderValue}`,
+            subtext: "per order",
+            trend: "12% vs last month",
+            trendType: "positive",
+            icon: ShoppingCart,
+            color: "bg-orange-50 text-orange-400",
+            modalId: 'aov'
         },
         {
             title: "vs Last Month",
@@ -52,8 +66,8 @@ export default function VendorStats() {
 
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                {stats.map((stat, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {stats.map((stat: any, index) => (
                     <div
                         key={index}
                         onClick={() => setOpenModal(stat.modalId)}
@@ -109,6 +123,7 @@ export default function VendorStats() {
             <PendingOrdersModal isOpen={openModal === 'pending'} onClose={() => setOpenModal(null)} />
             <VendorLowStockModal isOpen={openModal === 'stock'} onClose={() => setOpenModal(null)} />
             <RevenueGrowthModal isOpen={openModal === 'growth'} onClose={() => setOpenModal(null)} />
+            <AverageOrderValueModal isOpen={openModal === 'aov'} onClose={() => setOpenModal(null)} />
         </>
     );
 }

@@ -1,12 +1,32 @@
 import { Box, Download, Plus, AlertTriangle } from 'lucide-react';
 
 interface StockStatsProps {
+    products: any[];
     onReorderAll?: () => void;
     onAddStock?: () => void;
     onExport?: () => void;
 }
 
-export default function StockStats({ onReorderAll, onAddStock, onExport }: StockStatsProps) {
+export default function StockStats({ products, onReorderAll, onAddStock, onExport }: StockStatsProps) {
+    // Calculate metrics from real data
+    const totalProducts = products.length;
+
+    const lowStock = products.filter(p => {
+        const stockPercentage = (p.currentStock / p.maxStock) * 100;
+        return stockPercentage <= 50 && stockPercentage > 25;
+    }).length;
+
+    const critical = products.filter(p => {
+        const stockPercentage = (p.currentStock / p.maxStock) * 100;
+        return stockPercentage <= 25;
+    }).length;
+
+    // Calculate items likely to deplete in 7 days
+    const depletingSoon = products.filter(p => {
+        const daysUntilEmpty = p.consumption > 0 ? p.currentStock / (p.consumption / 7) : 999;
+        return daysUntilEmpty <= 7 && daysUntilEmpty > 0;
+    }).length;
+
     return (
         <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-8">
             {/* Metrics Row */}
@@ -16,21 +36,21 @@ export default function StockStats({ onReorderAll, onAddStock, onExport }: Stock
                         <p className="text-slate-500 text-sm font-medium mb-1">Total Products</p>
                         <div className="flex items-center gap-2">
                             <Box className="w-5 h-5 text-brand" />
-                            <span className="text-2xl font-bold text-slate-900">5</span>
+                            <span className="text-2xl font-bold text-slate-900">{totalProducts}</span>
                         </div>
                     </div>
                     <div>
                         <p className="text-slate-500 text-sm font-medium mb-1">Low Stock</p>
                         <div className="flex items-center gap-2">
                             <AlertTriangle className="w-5 h-5 text-yellow-500" />
-                            <span className="text-2xl font-bold text-slate-900">4</span>
+                            <span className="text-2xl font-bold text-slate-900">{lowStock}</span>
                         </div>
                     </div>
                     <div>
                         <p className="text-slate-500 text-sm font-medium mb-1">Critical</p>
                         <div className="flex items-center gap-2">
                             <AlertTriangle className="w-5 h-5 text-red-500" />
-                            <span className="text-2xl font-bold text-slate-900">4</span>
+                            <span className="text-2xl font-bold text-slate-900">{critical}</span>
                         </div>
                     </div>
 
@@ -44,13 +64,15 @@ export default function StockStats({ onReorderAll, onAddStock, onExport }: Stock
                         <Download className="w-4 h-4" />
                         Export CSV
                     </button>
-                    <button
-                        onClick={onReorderAll}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors shadow-sm"
-                    >
-                        <AlertTriangle className="w-4 h-4" />
-                        Reorder All Critical (4)
-                    </button>
+                    {critical > 0 && (
+                        <button
+                            onClick={onReorderAll}
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors shadow-sm"
+                        >
+                            <AlertTriangle className="w-4 h-4" />
+                            Reorder All Critical ({critical})
+                        </button>
+                    )}
                     <button
                         onClick={onAddStock}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-brand rounded-lg hover:bg-brand/90 transition-colors shadow-sm"
@@ -62,12 +84,14 @@ export default function StockStats({ onReorderAll, onAddStock, onExport }: Stock
             </div>
 
             {/* Insight Banner */}
-            <div className="flex items-start gap-3 p-4 bg-orange-50 border border-orange-100 rounded-xl">
-                <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
-                <p className="text-slate-900 text-sm">
-                    <span className="font-bold">Usage Insight:</span> 4 items likely to deplete within 7 days based on usage trends
-                </p>
-            </div>
+            {depletingSoon > 0 && (
+                <div className="flex items-start gap-3 p-4 bg-orange-50 border border-orange-100 rounded-xl">
+                    <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5" />
+                    <p className="text-slate-900 text-sm">
+                        <span className="font-bold">Usage Insight:</span> {depletingSoon} {depletingSoon === 1 ? 'item' : 'items'} likely to deplete within 7 days based on usage trends
+                    </p>
+                </div>
+            )}
         </div>
     );
 }

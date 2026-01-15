@@ -1,69 +1,85 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import CatalogueHeader from '../../components/vendor/catalogue/CatalogueHeader';
 import VendorProductCard from '../../components/vendor/catalogue/VendorProductCard';
-import { MessageCircle } from 'lucide-react';
+import AddProductModal from '../../components/vendor/catalogue/AddProductModal';
+import { MessageCircle, Plus } from 'lucide-react';
+import { getProducts } from '@/actions/vendor/products';
 
 export default function VendorCataloguePage() {
+    const [products, setProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    useEffect(() => {
+        loadProducts();
+    }, [isAddModalOpen]);
+
+    const loadProducts = async () => {
+        setLoading(true);
+        const res = await getProducts();
+        if (res.products) {
+            setProducts(res.products);
+        }
+        setLoading(false);
+    };
+
     return (
         <div className="max-w-7xl mx-auto pb-20 relative">
-            <CatalogueHeader />
+            {/* Custom Header with Add Button injection if needed, or we just put a button below/above */}
+            {/* Custom Header with Add Button injection */}
+            <CatalogueHeader onAddProduct={() => setIsAddModalOpen(true)} />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
-                <VendorProductCard
-                    title="Office Paper A4 Premium"
-                    producer="PaperCo Industries"
-                    description="A4 Paper 80gsm White Premium"
-                    quantity="Quantity: Box of 500 sheets"
-                    price="₾12.99"
-                    status="Active"
-                    stockCount="85 units"
-                    stockLevel={85}
-                />
-                <VendorProductCard
-                    title="Hand Sanitizer 500ml"
-                    producer="HygieneFirst Ltd"
-                    description="Hand Sanitizer Gel 70% Alcohol"
-                    quantity="Volume: 500ml"
-                    price="₾7.90"
-                    status="Low Stock"
-                    lowStockWarning={false} // actually just low stock
-                    stockCount="25 units"
-                    stockLevel={25}
-                    deliveryTime="1 day"
-                />
-                <VendorProductCard
-                    title="Industrial Gloves Box"
-                    producer="SafetyPro Manufacturing"
-                    description="Nitrile Gloves Powder-Free"
-                    quantity="Quantity: Box of 100"
-                    price="₾16.50"
-                    status="Active"
-                    lowStockWarning={true} // mimicking the 'Out of Stock' look or critical low
-                    stockCount="12 units"
-                    stockLevel={12}
-                    deliveryTime="3 days"
-                />
+            {loading ? (
+                <div className="text-center py-20 text-slate-500">Loading products...</div>
+            ) : products.length === 0 ? (
+                <div className="text-center py-20 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                    <p className="text-slate-500 mb-4">No products in your catalogue.</p>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="text-brand font-medium hover:underline"
+                    >
+                        Add your first product
+                    </button>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
+                    {products.map((product) => {
+                        const pricing = product.pricing[0]; // Assuming first price is the main one for now
+                        const stock = product.stock[0]; // Assuming first location stock
+                        const currentStock = stock ? parseFloat(stock.currentStock) : 0;
+                        const price = pricing ? parseFloat(pricing.basePrice).toFixed(2) : '0.00';
 
-                {/* Second Row Example */}
-                <VendorProductCard
-                    title="Multi-Purpose Cleaner 5L"
-                    producer="CleanMaster Solutions"
-                    description="All-Surface Cleaner Concentrate"
-                    quantity="Volume: 5L"
-                    price="₾24.50"
-                    status="Active"
-                    stockCount="65 units"
-                    stockLevel={65}
-                />
-            </div>
+                        return (
+                            <VendorProductCard
+                                key={product.id}
+                                title={product.name}
+                                producer="Your Company" // We could fetch org name if needed
+                                description={product.description || 'No description'}
+                                quantity={`Unit: ${product.unitOfMeasure || 'N/A'}`}
+                                price={`₾${price}`}
+                                status={product.status === 'active' ? 'Active' : 'Draft'}
+                                stockCount={`${currentStock} units`}
+                                stockLevel={currentStock > 0 ? 100 : 0} // visual placeholder
+                                lowStockWarning={currentStock <= 5}
+                            />
+                        );
+                    })}
+                </div>
+            )}
 
-            {/* Floating Action Button */}
+            {/* Floating Action Button - Maybe keep for support or secondary actions */}
             <div className="fixed bottom-8 right-8">
                 <button className="bg-[#005f73] text-white p-4 rounded-full shadow-lg hover:bg-[#0a9396] transition-colors">
                     <MessageCircle className="w-6 h-6" />
                 </button>
             </div>
+
+            <AddProductModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+            />
         </div>
     );
 }

@@ -13,6 +13,7 @@ import SpendingCharts from '../../components/analytics/SpendingCharts';
 import { Download } from 'lucide-react';
 import { exportToCSV } from '@/lib/export';
 import { rawOrders } from '../../lib/mockAnalyticsData';
+import { Protected } from '@/hooks/use-permission';
 
 export default function AnalyticsPage() {
     const metrics = getKPIMetrics();
@@ -34,13 +35,15 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="flex gap-3">
-                    <button
-                        onClick={handleExport}
-                        className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 text-sm"
-                    >
-                        <Download className="w-4 h-4" />
-                        Export CSV
-                    </button>
+                    <Protected resource="analytics" action="export">
+                        <button
+                            onClick={handleExport}
+                            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 text-sm"
+                        >
+                            <Download className="w-4 h-4" />
+                            Export CSV
+                        </button>
+                    </Protected>
                     <button className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 text-sm shadow-sm transition-colors">
                         Compare Vendors
                     </button>

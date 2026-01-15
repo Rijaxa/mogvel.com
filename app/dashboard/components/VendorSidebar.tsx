@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
     LayoutGrid,
     Package,
@@ -29,8 +30,8 @@ const navItems = [
 ];
 
 const bottomItems = [
-    { icon: Settings, label: 'Settings', href: '#' },
-    { icon: Users, label: 'Team Management', href: '#' },
+    { icon: Settings, label: 'Settings', href: '/dashboard/vendor/settings' },
+    { icon: Users, label: 'Team Management', href: '/dashboard/vendor/team' },
     { icon: HelpCircle, label: 'Help', href: '#' },
 ];
 
@@ -50,13 +51,15 @@ export default function VendorSidebar({
                 isCollapsed ? "w-20" : "w-64"
             )}
         >
-            <div className={cn("p-6 border-b border-slate-100 flex items-center", isCollapsed ? "justify-center" : "justify-start gap-2")}>
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg shrink-0">
-                        M
-                    </div>
+            <div className="px-4 py-6 border-b border-slate-100">
+                <Link href="/dashboard/vendor" className="flex items-center gap-3">
                     {!isCollapsed && (
-                        <span className="text-xl font-bold text-slate-900 animate-in fade-in duration-300">Mogvel</span>
+                        <img src="/mogvel-logo.png" alt="Mogvel" className="h-18 animate-in fade-in duration-300" />
+                    )}
+                    {isCollapsed && (
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand text-white font-bold text-lg">
+                            M
+                        </div>
                     )}
                 </Link>
             </div>
@@ -92,27 +95,34 @@ export default function VendorSidebar({
             </div>
 
             <div className="p-3 border-t border-slate-100 space-y-1">
-                {bottomItems.map((item) => (
-                    <Link
-                        key={item.label}
-                        href={item.href}
-                        className={cn(
-                            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors group relative",
-                            isCollapsed && "justify-center"
-                        )}
-                        title={isCollapsed ? item.label : undefined}
-                    >
-                        <item.icon className="w-5 h-5 shrink-0" />
-                        {!isCollapsed && <span className="animate-in fade-in duration-300">{item.label}</span>}
-                        {isCollapsed && (
-                            <div className="absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
-                                {item.label}
-                            </div>
-                        )}
-                    </Link>
-                ))}
+                {bottomItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                        <Link
+                            key={item.label}
+                            href={item.href}
+                            className={cn(
+                                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group relative",
+                                isActive
+                                    ? "bg-brand text-white"
+                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                                isCollapsed && "justify-center"
+                            )}
+                            title={isCollapsed ? item.label : undefined}
+                        >
+                            <item.icon className="w-5 h-5 shrink-0" />
+                            {!isCollapsed && <span className="animate-in fade-in duration-300">{item.label}</span>}
+                            {isCollapsed && (
+                                <div className="absolute left-full ml-2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
+                                    {item.label}
+                                </div>
+                            )}
+                        </Link>
+                    );
+                })}
 
                 <button
+                    onClick={() => signOut({ callbackUrl: '/' })}
                     className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors group relative",
                         isCollapsed && "justify-center"

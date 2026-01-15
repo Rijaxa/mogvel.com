@@ -20,11 +20,11 @@ export default function Hero() {
                     </p>
 
                     <div className="flex flex-wrap items-center gap-4">
-                        <Link href="/company/login" className="flex items-center gap-2 px-6 py-3 text-white bg-brand rounded-lg hover:bg-brand/90 transition-colors font-medium shadow-sm">
+                        <Link href="/register?type=company" className="flex items-center gap-2 px-6 py-3 text-white bg-brand rounded-lg hover:bg-brand/90 transition-colors font-medium shadow-sm">
                             Get Started as a Company
                             <ArrowRight className="w-4 h-4" />
                         </Link>
-                        <Link href="/vendor/login" className="px-6 py-3 text-brand border border-brand rounded-lg hover:bg-brand/10 transition-colors font-medium">
+                        <Link href="/register?type=vendor" className="px-6 py-3 text-brand border border-brand rounded-lg hover:bg-brand/10 transition-colors font-medium">
                             Join as a Vendor
                         </Link>
                     </div>

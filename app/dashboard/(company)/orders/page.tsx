@@ -20,7 +20,7 @@ export default function OrderPage() {
         getOrders()
             .then((data) => {
                 if (!data) {
-                    window.location.href = '/company/login';
+                    window.location.href = '/login';
                     return;
                 }
                 setOrders(data);

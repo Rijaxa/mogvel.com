@@ -2,7 +2,11 @@
 
 import { Search, Plus, ChevronDown } from 'lucide-react';
 
-export default function CatalogueHeader() {
+interface CatalogueHeaderProps {
+    onAddProduct?: () => void;
+}
+
+export default function CatalogueHeader({ onAddProduct }: CatalogueHeaderProps) {
     return (
         <div className="space-y-6 mb-8">
             <div className="flex justify-between items-start">
@@ -10,7 +14,10 @@ export default function CatalogueHeader() {
                     <h1 className="text-2xl font-bold text-slate-900">Product Catalogue</h1>
                     <p className="text-slate-500">Manage your product inventory</p>
                 </div>
-                <button className="flex items-center gap-2 bg-brand text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-brand/90 transition-colors shadow-sm shadow-brand/20">
+                <button
+                    onClick={onAddProduct}
+                    className="flex items-center gap-2 bg-brand text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-brand/90 transition-colors shadow-sm shadow-brand/20"
+                >
                     <Plus className="w-5 h-5" />
                     Add Product
                 </button>

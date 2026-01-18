@@ -122,7 +122,7 @@ async function main() {
     // Order 1: Pending
     await prisma.order.create({
         data: {
-            orderNumber: 'ORD-2025-001',
+            orderNumber: 'ORD-2026-001',
             companyId: companyOrg.id,
             vendorId: vendorOrg.id,
             status: 'pending',
@@ -137,7 +137,7 @@ async function main() {
     // Order 2: Delivered
     await prisma.order.create({
         data: {
-            orderNumber: 'ORD-2025-002',
+            orderNumber: 'ORD-2026-002',
             companyId: companyOrg.id,
             vendorId: vendorOrg.id,
             status: 'delivered',

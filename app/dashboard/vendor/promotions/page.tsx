@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { Plus, Calendar, MessageCircle } from 'lucide-react';
-import PromotionCard from '../../components/vendor/promotions/PromotionCard';
-import CreatePromotionModal from '../../components/vendor/promotions/CreatePromotionModal';
-import PromotionAnalyticsModal from '../../components/vendor/promotions/PromotionAnalyticsModal';
+import PromotionCard from '@/app/dashboard/components/vendor/promotions/PromotionCard';
+import CreatePromotionModal from '@/app/dashboard/components/vendor/promotions/CreatePromotionModal';
+import PromotionAnalyticsModal from '@/app/dashboard/components/vendor/promotions/PromotionAnalyticsModal';
 
 export default function PromotionsPage() {
     const [activeTab, setActiveTab] = useState<'active' | 'upcoming' | 'completed'>('active');

@@ -6,13 +6,13 @@ import {
     getSpendByCategory,
     getSpendByDepartment,
     getOrderFrequency
-} from '../../lib/mockAnalyticsData';
+} from '@/app/dashboard/lib/mockAnalyticsData';
 
-import KPIGrid from '../../components/analytics/KPIGrid';
-import SpendingCharts from '../../components/analytics/SpendingCharts';
+import KPIGrid from '@/app/dashboard/components/analytics/KPIGrid';
+import SpendingCharts from '@/app/dashboard/components/analytics/SpendingCharts';
 import { Download } from 'lucide-react';
 import { exportToCSV } from '@/lib/export';
-import { rawOrders } from '../../lib/mockAnalyticsData';
+import { rawOrders } from '@/app/dashboard/lib/mockAnalyticsData';
 
 export default function AnalyticsPage() {
     const metrics = getKPIMetrics();

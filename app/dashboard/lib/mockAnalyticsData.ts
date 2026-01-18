@@ -103,3 +103,37 @@ export const getOrderFrequency = () => {
         { name: 'Dec', value: 68 },
     ];
 };
+
+// 6. Vendor Comparison Data
+export const getVendorComparisonData = () => {
+    return [
+        {
+            category: 'On-Time Delivery',
+            user: 96.4,
+            marketAvg: 88.0,
+            topPerformers: 98.5,
+            unit: '%'
+        },
+        {
+            category: 'Quality Score',
+            user: 4.8,
+            marketAvg: 4.2,
+            topPerformers: 4.9,
+            unit: '/ 5'
+        },
+        {
+            category: 'Response Time',
+            user: 2.1,
+            marketAvg: 5.5,
+            topPerformers: 1.5,
+            unit: 'hrs'
+        },
+        {
+            category: 'Customer Satisfaction',
+            user: 92,
+            marketAvg: 85,
+            topPerformers: 96,
+            unit: '%'
+        }
+    ];
+};

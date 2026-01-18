@@ -44,7 +44,10 @@ export default function VendorLowStockModal({ isOpen, onClose }: VendorLowStockM
                                     <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.stock}%` }} />
                                 </div>
 
-                                <button className="w-full py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold text-slate-900 flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
+                                <button
+                                    onClick={() => console.log(`Reordering item: ${item.name}`)}
+                                    className="w-full py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold text-slate-900 flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors"
+                                >
                                     <ShoppingCart className="w-4 h-4" />
                                     Reorder Now
                                 </button>

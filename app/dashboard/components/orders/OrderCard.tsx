@@ -105,12 +105,14 @@ export default function OrderCard({
                     {/* Actions Footer */}
                     <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-slate-100">
                         <button
+                            onClick={() => console.log("Reorder requested for " + id)}
                             className="flex items-center gap-2 px-4 py-2 border border-brand text-brand rounded-lg text-sm font-bold hover:bg-cyan-50 transition-colors"
                         >
                             <RefreshCw className="w-4 h-4" />
                             Reorder
                         </button>
                         <button
+                            onClick={() => alert("Downloading invoice PDF...")}
                             className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 transition-colors"
                         >
                             <FileText className="w-4 h-4" />

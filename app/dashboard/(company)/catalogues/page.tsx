@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import CatalogueView from '../../components/catalogues/CatalogueView';
-import VendorView from '../../components/catalogues/VendorView';
+import CatalogueView from '@/app/dashboard/components/catalogues/CatalogueView';
+import VendorView from '@/app/dashboard/components/catalogues/VendorView';
 
 export default function CataloguesPage() {
     const [activeTab, setActiveTab] = useState<'products' | 'vendors'>('products');

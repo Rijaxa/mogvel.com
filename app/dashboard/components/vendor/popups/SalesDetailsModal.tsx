@@ -3,6 +3,7 @@
 import { X, ExternalLink, Download } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { exportToCSV } from '@/lib/export';
+import { useRouter } from 'next/navigation';
 
 interface SalesDetailsModalProps {
     isOpen: boolean;
@@ -19,6 +20,7 @@ const salesData = [
 ];
 
 export default function SalesDetailsModal({ isOpen, onClose }: SalesDetailsModalProps) {
+    const router = useRouter();
     if (!isOpen) return null;
 
     const handleExport = () => {
@@ -86,7 +88,10 @@ export default function SalesDetailsModal({ isOpen, onClose }: SalesDetailsModal
                     </div>
 
                     <div className="flex gap-3">
-                        <button className="flex-1 py-2.5 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-brand/20 text-sm">
+                        <button
+                            onClick={() => router.push('/dashboard/vendor/analytics')}
+                            className="flex-1 py-2.5 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-brand/20 text-sm"
+                        >
                             <ExternalLink className="w-4 h-4" />
                             View Sales Analytics
                         </button>

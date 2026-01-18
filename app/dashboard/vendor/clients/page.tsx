@@ -1,6 +1,6 @@
 'use client';
 
-import ClientRow from '../../components/vendor/clients/ClientRow';
+import ClientRow from '@/app/dashboard/components/vendor/clients/ClientRow';
 
 export default function VendorClientsPage() {
     return (

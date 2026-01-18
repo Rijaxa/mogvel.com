@@ -1,3 +1,3 @@
-import { handlers } from "../../../../auth" // Referring to auth.ts alias if configured, or relative path
+import { handlers } from "@/auth";
 console.log("🔹 /api/auth/[...nextauth] route hit");
 export const { GET, POST } = handlers

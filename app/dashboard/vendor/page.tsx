@@ -21,33 +21,7 @@ export default function VendorDashboard() {
 
             <VendorStats />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div className="lg:col-span-1">
-                    <QuickActions />
-                </div>
-                {/* 
-                Looking at screenshot:
-                - Col 1: Quick Actions (Top Right in screenshot? No, it's 2 cols. 
-                Wait, screenshot layout is:
-                Row 1: Stats
-                Row 2: 
-                   Left: Quick Actions (Wide? No looks like 1/3) -> Actually "Quick Actions" is top right in screenshot.
-                   
-                Let's re-examine screenshot:
-                - Top Row: 4 Stats Cards
-                - Row 2:
-                   - Left Column (2/3 width): Recent Orders
-                   - Right Column (1/3 width): 
-                       - Quick Actions (Top)
-                       - Top Products (Bottom)
-                       
-                Wait, looking at the crop:
-                "Quick Actions" is ABOVE "Top Products" on the right side.
-                "Recent Orders" is on the LEFT side.
-            */}
 
-                {/* Layout Attempt: */}
-            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column (Orders) */}

@@ -2,8 +2,8 @@
 
 import { Check, User, X, MessageCircle, FileText, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import OrderProgress from '../../orders/OrderProgress';
-import OrderActivityFeed from '../../orders/OrderActivityFeed';
+import OrderProgress from '@/app/dashboard/components/orders/OrderProgress';
+import OrderActivityFeed from '@/app/dashboard/components/orders/OrderActivityFeed';
 
 interface VendorOrderDetailsProps {
     status: 'Incoming' | 'In Progress' | 'Completed';

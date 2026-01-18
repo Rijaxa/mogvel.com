@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Search } from 'lucide-react';
-import VendorOrderRow from '../../components/vendor/orders/VendorOrderRow';
+import VendorOrderRow from '@/app/dashboard/components/vendor/orders/VendorOrderRow';
 
 export default function VendorOrdersPage() {
     const [activeTab, setActiveTab] = useState<'incoming' | 'progress' | 'completed'>('incoming');

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import StatsCard from '../../components/StatsCard';
-import ActiveVendorsTable from '../../components/ActiveVendorsTable';
-import LowStockModal from '../../components/LowStockModal';
+import StatsCard from '@/app/dashboard/components/StatsCard';
+import ActiveVendorsTable from '@/app/dashboard/components/ActiveVendorsTable';
+import LowStockModal from '@/app/dashboard/components/LowStockModal';
 import { Box, Users, DollarSign } from 'lucide-react';
 
 export default function DashboardPage() {

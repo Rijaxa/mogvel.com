@@ -2,6 +2,7 @@
 
 import { X, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useRouter } from 'next/navigation';
 
 interface RevenueGrowthModalProps {
     isOpen: boolean;
@@ -14,6 +15,7 @@ const data = [
 ];
 
 export default function RevenueGrowthModal({ isOpen, onClose }: RevenueGrowthModalProps) {
+    const router = useRouter();
     if (!isOpen) return null;
 
     return (
@@ -62,7 +64,10 @@ export default function RevenueGrowthModal({ isOpen, onClose }: RevenueGrowthMod
                         <span className="text-green-600 font-medium">increase (₾4,820)</span>
                     </div>
 
-                    <button className="w-full py-3 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-brand/20">
+                    <button
+                        onClick={() => router.push('/dashboard/vendor/analytics?view=revenue')}
+                        className="w-full py-3 bg-brand text-white rounded-xl font-bold hover:bg-brand/90 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-brand/20"
+                    >
                         <TrendingUp className="w-5 h-5" />
                         Open Revenue Trend
                     </button>

@@ -6,6 +6,9 @@ import VendorProductCard from '../../components/vendor/catalogue/VendorProductCa
 import AddProductModal from '../../components/vendor/catalogue/AddProductModal';
 import { MessageCircle, Plus } from 'lucide-react';
 import { getProducts } from '@/actions/vendor/products';
+import CatalogueHeader from '@/app/dashboard/components/vendor/catalogue/CatalogueHeader';
+import VendorProductCard from '@/app/dashboard/components/vendor/catalogue/VendorProductCard';
+import { MessageCircle } from 'lucide-react';
 
 export default function VendorCataloguePage() {
     const [products, setProducts] = useState<any[]>([]);

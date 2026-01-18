@@ -60,6 +60,12 @@ export default function VendorView() {
                         <Box className="w-5 h-5 text-brand" />
                         <h3 className="font-bold text-slate-900">Active Vendors</h3>
                     </div>
+                    <button
+                        onClick={() => console.log("View All Vendors clicked")}
+                        className="text-xs font-bold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50"
+                    >
+                        View All Vendors
+                    </button>
                 </div>
 
                 {/* Header Row */}

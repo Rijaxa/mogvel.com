@@ -18,6 +18,10 @@ export default function VendorDashboard() {
                 <p className="text-slate-500">Your business control center</p>
             </div>
 
+            <VendorStats />
+
+
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column (Stats + Orders) */}
                 <div className="lg:col-span-2 space-y-8">

@@ -59,7 +59,7 @@ export default function VendorOrders() {
     const filters = ['All', 'Pending', 'Approved', 'Delivered'];
 
     return (
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 flex-1">
+        <div className="bg-white rounded-2xl p-6 border border-slate-100 h-full">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-sm font-bold text-slate-900">Recent Orders</h3>
                 <div className="flex gap-2">

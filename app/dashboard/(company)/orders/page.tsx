@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import OrderCard from '../../components/orders/OrderCard';
-import OrderTabs from '../../components/orders/OrderTabs';
+import OrderCard from '@/app/dashboard/components/orders/OrderCard';
+import OrderTabs from '@/app/dashboard/components/orders/OrderTabs';
 import { getOrders } from '@/actions/orders';
 import { exportToCSV } from '@/lib/export';
 import { Download } from 'lucide-react';
